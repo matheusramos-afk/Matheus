@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>O Peso da Decisão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#060C1C; --bg2:#0A1228; --panel:#0E1A3A; --panel2:#132245;
+  --line:#1E2E59; --line2:#2A3C6E;
+  --amber:#FFC831; --amber-dim:#8A6A1A; --amber-glow:rgba(255,200,49,.14);
+  --ice:#C8D4EE; --muted:#8392B8; --muted2:#5E6E96;
+  --blue:#227DBF; --green:#3FA85A; --red:#C65B4E;
+  --sans:'Raleway',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ice);font-family:var(--sans);
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(900px 520px at 78% -8%, rgba(34,125,191,.13), transparent 62%),
+    radial-gradient(700px 440px at 4% 102%, rgba(255,200,49,.07), transparent 60%);
+  background-attachment:fixed;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:60}
+h1,h2,h3,h4{margin:0;font-weight:800;letter-spacing:-.01em;color:#fff;line-height:1.2}
+p{margin:0 0 .85em}
+p:last-child{margin-bottom:0}
+a{color:var(--amber)}
+button{font-family:inherit}
+
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px 72px}
+.screen{display:none;animation:rise .45s cubic-bezier(.2,.8,.3,1)}
+.screen.on{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen{animation:none}}
+
+/* ---------- barra superior ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;
+  background:rgba(6,12,28,.86);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);}
+.top-in{max-width:1040px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-size:11px;letter-spacing:.22em;font-weight:800;color:#fff;white-space:nowrap}
+.brand em{color:var(--amber);font-style:normal}
+.top-meta{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);white-space:nowrap}
+.pill.hot{border-color:var(--amber-dim);color:var(--amber);background:var(--amber-glow)}
+.pill.live{border-color:#2F5A3C;color:#6FD089;background:rgba(63,168,90,.1)}
+.pill.local{border-color:#5A4A2F;color:#E0B45E;background:rgba(255,200,49,.08)}
+
+/* ---------- progresso ---------- */
+.steps{display:flex;gap:6px;max-width:1040px;margin:0 auto;padding:10px 18px 0}
+.step{flex:1;height:3px;border-radius:2px;background:var(--line);position:relative;overflow:hidden}
+.step.done{background:var(--amber-dim)}
+.step.now{background:var(--amber);box-shadow:0 0 14px rgba(255,200,49,.45)}
+.steps-lbl{max-width:1040px;margin:0 auto;padding:7px 18px 0;display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--muted2);text-transform:uppercase}
+
+/* ---------- tipografia ---------- */
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:12px}
+.kicker.cool{color:var(--blue)}
+.lead{color:var(--muted);font-size:15px}
+.sec-title{font-size:clamp(23px,4.4vw,34px);margin-bottom:10px}
+.hr{height:1px;background:var(--line);margin:26px 0;border:0}
+
+/* ---------- cartões ---------- */
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);
+  border-radius:14px;padding:20px}
+.card.quiet{background:var(--bg2)}
+.card.amber{border-color:var(--amber-dim);background:linear-gradient(180deg,#191430,#0D1024)}
+.grid{display:grid;gap:12px}
+@media(min-width:720px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+
+/* ---------- formulário ---------- */
+label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+input[type=text],textarea,select{
+  width:100%;background:#091129;border:1px solid var(--line2);border-radius:10px;
+  color:#fff;font-family:var(--sans);font-size:15.5px;padding:12px 14px;outline:none;
+  transition:border-color .18s, box-shadow .18s}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-glow)}
+textarea{resize:vertical;min-height:132px;line-height:1.6}
+.hint{font-size:12.5px;color:var(--muted2);margin-top:7px}
+.counter{font-family:var(--mono);font-size:11px;color:var(--muted2);text-align:right;margin-top:6px}
+.counter.ok{color:var(--green)}
+
+.codes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.code{background:#091129;border:1px solid var(--line2);border-radius:12px;padding:16px 8px;
+  text-align:center;cursor:pointer;transition:.18s;user-select:none}
+.code:hover{border-color:var(--line2);background:#0C1733}
+.code .l{font-family:var(--mono);font-size:30px;font-weight:600;color:var(--ice);line-height:1}
+.code .s{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--muted2);margin-top:7px;text-transform:uppercase}
+.code[aria-pressed=true]{border-color:var(--amber);background:var(--amber-glow)}
+.code[aria-pressed=true] .l{color:var(--amber)}
+.code[aria-pressed=true] .s{color:var(--amber)}
+
+/* ---------- botões ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  background:var(--amber);color:#0A0F1F;border:0;border-radius:11px;
+  padding:14px 24px;font-weight:800;font-size:14.5px;letter-spacing:.03em;cursor:pointer;
+  transition:transform .14s, filter .18s;width:100%}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.38;cursor:not-allowed;filter:none}
+.btn.ghost{background:transparent;color:var(--ice);border:1px solid var(--line2)}
+.btn.ghost:hover{border-color:var(--amber);color:var(--amber)}
+.btn.sm{padding:9px 14px;font-size:12.5px;width:auto;border-radius:9px}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn-row .btn{width:auto;flex:1;min-width:160px}
+.linkish{background:none;border:0;color:var(--muted2);font-size:12px;text-decoration:underline;
+  cursor:pointer;padding:6px;font-family:var(--mono);letter-spacing:.08em}
+
+/* ---------- perfil da empresa ---------- */
+.dossie-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.sigla{width:72px;height:72px;flex:0 0 72px;border-radius:16px;border:1.5px solid var(--amber);
+  background:var(--amber-glow);display:grid;place-items:center;
+  font-family:var(--mono);font-size:33px;font-weight:600;color:var(--amber)}
+.kv{display:grid;gap:0}
+.kv .row{display:grid;grid-template-columns:1fr;gap:2px;padding:11px 0;border-top:1px solid var(--line)}
+.kv .row:first-child{border-top:0}
+@media(min-width:620px){.kv .row{grid-template-columns:168px 1fr;gap:14px;align-items:baseline}}
+.kv dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2)}
+.kv dd{margin:0;color:var(--ice);font-size:15px}
+.stat{background:#091129;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .v{font-family:var(--mono);font-size:21px;font-weight:600;color:#fff;line-height:1.15}
+.stat .v.amber{color:var(--amber)}
+.stat .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2);margin-top:6px}
+ul.bul{margin:0;padding-left:18px;color:var(--ice);font-size:14.5px}
+ul.bul li{margin-bottom:7px}
+ul.bul li::marker{color:var(--amber)}
+ul.bul.cool li::marker{color:var(--blue)}
+
+/* ---------- caminhos ---------- */
+.path{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);
+  border-radius:14px;padding:18px;cursor:pointer;transition:.2s;position:relative}
+.path:hover{border-color:var(--line2);transform:translateY(-2px)}
+.path[aria-pressed=true]{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber),0 14px 34px -18px rgba(255,200,49,.5)}
+.path .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--amber);margin-bottom:9px}
+.path h4{font-size:17px;margin-bottom:9px}
+.path .res{font-size:14px;color:var(--muted);margin-bottom:14px}
+.vr{display:grid;gap:9px}
+.vr div{font-size:12.8px;color:var(--ice);display:flex;gap:8px;align-items:flex-start;line-height:1.45}
+.vr b{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;flex:0 0 auto;padding:2px 6px;border-radius:5px;
+  text-transform:uppercase;font-weight:600}
+.vr .up b{background:rgba(63,168,90,.14);color:#6FD089}
+.vr .dn b{background:rgba(198,91,78,.14);color:#E08878}
+.check{position:absolute;top:14px;right:14px;width:21px;height:21px;border-radius:50%;
+  border:1.5px solid var(--line2);display:grid;place-items:center;font-size:12px;color:transparent}
+.path[aria-pressed=true] .check{border-color:var(--amber);background:var(--amber);color:#0A0F1F}
+
+/* ---------- revelação ---------- */
+.reveal-art{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);background:#070E20}
+.reveal-name{font-size:clamp(27px,5.6vw,46px);color:var(--amber);letter-spacing:-.015em;line-height:1.08}
+.block-t{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:9px}
+.srcs{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.srcs a{font-size:12.6px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2);
+  padding-bottom:6px;word-break:break-word;display:block}
+.srcs a:hover{color:var(--amber);border-color:var(--amber-dim)}
+.srcs a span{font-family:var(--mono);font-size:10px;color:var(--muted2);display:block;margin-top:2px}
+
+/* ---------- linha do tempo ---------- */
+.tl{position:relative;padding-left:30px}
+.tl::before{content:"";position:absolute;left:8px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(180deg,var(--amber),var(--line2))}
+.tl-item{position:relative;margin-bottom:16px}
+.tl-item::before{content:"";position:absolute;left:-28px;top:20px;width:14px;height:14px;border-radius:50%;
+  background:var(--bg);border:2.5px solid var(--amber)}
+.vs{display:grid;gap:10px;margin-top:12px}
+@media(min-width:680px){.vs{grid-template-columns:1fr 1fr}}
+.vs .b{border-radius:11px;padding:13px 15px;border:1px solid var(--line)}
+.vs .b.mine{background:var(--amber-glow);border-color:var(--amber-dim)}
+.vs .b.real{background:rgba(34,125,191,.09);border-color:#1E4C73}
+.vs .b .t{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.vs .b.mine .t{color:var(--amber)}
+.vs .b.real .t{color:#6BB6E8}
+.vs .b .n{font-weight:700;color:#fff;font-size:14.5px;line-height:1.35}
+.vs .b .d{font-size:13px;color:var(--muted);margin-top:6px;white-space:pre-wrap}
+.final-quote{font-size:clamp(17px,3.3vw,25px);font-weight:800;color:var(--amber);line-height:1.38;letter-spacing:-.01em}
+
+/* ---------- listas / admin ---------- */
+.rowitem{display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.rowitem:first-child{border-top:0}
+.badge{font-family:var(--mono);font-size:12px;font-weight:600;width:28px;height:28px;flex:0 0 28px;
+  border-radius:8px;display:grid;place-items:center;background:var(--amber-glow);
+  color:var(--amber);border:1px solid var(--amber-dim)}
+.rowitem .nm{font-weight:600;color:#fff;font-size:14.5px}
+.rowitem .sub{font-size:12px;color:var(--muted2);font-family:var(--mono)}
+.dots{margin-left:auto;display:flex;gap:5px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--line2)}
+.dot.on{background:var(--amber)}
+.empty{text-align:center;color:var(--muted2);font-size:13.5px;padding:24px 10px;font-family:var(--mono)}
+.sticky-note{position:sticky;bottom:12px;margin-top:20px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  background:#13203F;border:1px solid var(--line2);color:#fff;padding:12px 18px;border-radius:11px;
+  font-size:13.5px;z-index:120;box-shadow:0 18px 40px -18px #000;max-width:calc(100% - 36px);text-align:center}
+.wait{display:flex;align-items:center;gap:11px;color:var(--muted);font-size:14px}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--amber);animation:pl 1.7s ease-in-out infinite}
+@keyframes pl{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+.scrollx{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2);font-weight:500}
+td .mini{color:var(--muted);font-size:12px;white-space:pre-wrap;max-width:380px}
+.pre{white-space:pre-wrap;font-size:13.5px;color:var(--ice)}
+.center{text-align:center}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt24{margin-top:24px}.mt32{margin-top:32px}
+.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}.mb24{margin-bottom:24px}
+.hero-title{font-size:clamp(38px,10.5vw,86px);line-height:.95;letter-spacing:-.025em;font-weight:900}
+.hero-title .y{color:var(--amber);display:block}
+</style>
+<style>
+/* ---------- revelação em destaque ---------- */
+.case{border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  background:linear-gradient(180deg,var(--panel),var(--bg2));margin-bottom:20px}
+.case.mine{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber),0 22px 50px -26px rgba(255,200,49,.5)}
+.case-media{position:relative;width:100%;aspect-ratio:16/7;background:#070E20;overflow:hidden}
+.case-media>svg,.case-media>img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+.case-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,12,28,.12) 0%,rgba(6,12,28,.55) 55%,rgba(6,12,28,.96) 100%)}
+.case-over{position:absolute;inset:auto 0 0 0;padding:16px 20px 18px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.case-logo{width:54px;height:54px;flex:0 0 54px;border-radius:13px;background:rgba(255,255,255,.95);
+  display:grid;place-items:center;overflow:hidden;font-family:var(--mono);font-weight:600;font-size:19px;color:#0A0F1F}
+.case-logo img{width:100%;height:100%;object-fit:contain;padding:6px;background:#fff}
+.case-name{font-size:clamp(22px,4.6vw,38px);font-weight:900;letter-spacing:-.02em;color:#fff;line-height:1.05}
+.case-year{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--amber);margin-bottom:4px}
+.case-body{padding:18px 20px 20px}
+.case-t{font-size:clamp(16px,2.8vw,21px);color:var(--amber);font-weight:800;line-height:1.3;margin-bottom:12px}
+.case-grid{display:grid;gap:12px}
+@media(min-width:760px){.case-grid{grid-template-columns:1fr 1fr}}
+.case-box{background:#091129;border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+.case-box .t{font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted2);margin-bottom:6px}
+.case-box p{font-size:13.6px;color:var(--ice);margin:0}
+.case-box.key{background:var(--amber-glow);border-color:var(--amber-dim)}
+.case-box.key p{color:#FFE6A8}
+.case-path{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:#6BB6E8;border:1px solid #1E4C73;
+  background:rgba(34,125,191,.1);padding:5px 10px;border-radius:8px;margin-bottom:12px}
+.mine-tag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  background:var(--amber);color:#0A0F1F;padding:4px 9px;border-radius:7px;font-weight:600;margin-bottom:10px}
+.dilema-box{background:linear-gradient(180deg,#141028,#0B1024);border:1px solid var(--amber-dim);
+  border-radius:16px;padding:22px}
+.dilema-q{font-size:clamp(19px,3.6vw,27px);font-weight:800;color:#fff;line-height:1.3;letter-spacing:-.01em}
+.real-strip{display:grid;gap:10px;margin-top:12px}
+@media(min-width:680px){.real-strip{grid-template-columns:1fr 1fr}}
+.upl{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.upl:first-of-type{border-top:0}
+.upl .lbl{font-family:var(--mono);font-size:11px;color:var(--ice);min-width:132px}
+.upl .st{font-family:var(--mono);font-size:10.5px;color:var(--muted2);margin-left:auto}
+.upl .st.ok{color:#6FD089}
+.thumb{width:46px;height:30px;border-radius:6px;object-fit:cover;border:1px solid var(--line2);background:#070E20}
+input[type=file]{font-size:12px;color:var(--muted);max-width:190px}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <div class="brand">O PESO DA <em>DECISÃO</em></div>
+  <div class="top-meta" id="topMeta"></div>
+</div></div>
+<div id="steps"></div>
+<div class="wrap" id="app"></div>
+<script>
+"use strict";
+/* ============================================================
+   O PESO DA DECISÃO — v2
+   Três dilemas universais. Cinco organizações reais. Contextos diferentes.
+   Fatos históricos verificados; as alternativas são construções da dinâmica.
+   ============================================================ */
+const FASES = ["cadastro","perfil","r1","rev1","r2","rev2","r3","rev3","final"];
+const ROTULOS = ["Cadastro","Perfil","Dilema 1","Revelação 1","Dilema 2","Revelação 2","Dilema 3","Revelação 3","Linha do tempo"];
+const CODIGOS = ["A","B","C","D","E"];
+const SENHA_FACILITADOR = "DECIDIR2026";
+const FRASE_FINAL = "Uma liderança não é definida pela certeza de suas decisões, mas pela responsabilidade de assumir seus caminhos.";
+const ORDEM = [[1,2,0],[2,0,1],[0,2,1]];
+
+/* ---------------- os três dilemas, iguais para todos ---------------- */
+const DILEMAS = [
+{
+ n:1, nome:"A base parou de responder",
+ pergunta:"O que sustentava a organização deixou de funcionar. Onde a liderança age primeiro?",
+ cenario:[
+  "O motor principal do negócio perdeu força. Os números pioraram, a concorrência mudou de forma e a estrutura que funcionou por anos passou a entregar menos com o mesmo esforço.",
+  "O time inteiro olha para a liderança esperando uma direção. Há caixa e energia para um movimento sério — não para três ao mesmo tempo. Escolher um caminho significa adiar os outros dois, possivelmente por anos.",
+  "Ninguém no mercado já resolveu esse problema desse jeito, nesse contexto. Não existe referência para copiar."
+ ],
+ guia:[
+  "O que exatamente parou de funcionar: o produto, o jeito de produzir, o jeito de vender ou o jeito de decidir?",
+  "O que a organização tem hoje que ninguém mais tem?",
+  "Quanto tempo a estrutura atual aguenta antes de o problema virar irreversível?"
+ ],
+ caminhos:[
+  {t:"Arrumar a casa por dentro",
+   r:"Manter o que a organização vende e para quem vende, e atacar o modo de operar: método, medição, padronização, metas desdobradas e disciplina de custo.",
+   up:["Gera dado e controle onde hoje existe intuição","Melhoria replicável em toda a organização","Não exige apostar o caixa em algo novo"],
+   dn:["Resultado leva meses de disciplina para aparecer","Não resolve problema de demanda ou de percepção","Choca com a cultura instalada e pode custar talentos"]},
+  {t:"Mudar a oferta e o público",
+   r:"Rever o que a organização entrega, para quem entrega, por qual canal e a que preço — mesmo que isso contrarie a base de clientes construída até aqui.",
+   up:["Ataca a causa quando o problema é de percepção ou de canal","Abre mercado novo sem trocar de negócio","Recupera margem sem depender de corte"],
+   dn:["Pode afastar a base histórica de clientes","Exige investimento alto e contínuo em comunicação","Resultado é lento e difícil de medir no início"]},
+  {t:"Mexer na estrutura",
+   r:"Encerrar o que não paga, concentrar tudo em uma única aposta e mudar a forma como o negócio é controlado e financiado.",
+   up:["Alívio imediato de caixa e de complexidade","Foco gerencial em poucas decisões","Destrava capital que a estrutura atual bloqueia"],
+   dn:["Joga fora investimento já feito e capacidade instalada","Aposta concentrada: se a escolha errar, não há plano B","Mudança de controle é politicamente cara e irreversível"]}
+ ]
+},
+{
+ n:2, nome:"O teto do próprio tamanho",
+ pergunta:"A organização se recuperou e quer crescer. Mas o tamanho atual virou o limite. Como passar dele?",
+ cenario:[
+  "O movimento anterior funcionou: a casa está em ordem e a organização voltou a ganhar. O problema agora é outro — o crescimento esbarra no próprio tamanho.",
+  "O mercado onde ela é forte não cresce o suficiente. Os concorrentes relevantes são maiores, mais capitalizados ou chegaram antes aos lugares que importam. Ficar do tamanho que está é uma escolha com consequência: em alguns anos, outra empresa define as regras do setor.",
+  "Crescer de verdade exige abrir mão de alguma coisa — controle, caixa, foco ou segurança. A liderança precisa decidir do que abre mão."
+ ],
+ guia:[
+  "O que impede a organização de crescer: mercado, capital, capacidade técnica ou marca?",
+  "Do que a liderança está disposta a abrir mão — e do que não está, em nenhuma hipótese?",
+  "Quanto tempo a organização aguenta investindo antes de o movimento precisar dar retorno?"
+ ],
+ caminhos:[
+  {t:"Juntar-se a quem já é grande",
+   r:"Fusão, combinação ou aliança com um par do setor — aceitando ceder parte do controle em troca de escala imediata.",
+   up:["Escala e posição de mercado de uma só vez","Encerra uma guerra que desgasta os dois lados","Acesso imediato a ativos que levariam anos para construir"],
+   dn:["Perda de controle, muitas vezes irreversível","Risco regulatório e exposição pública","Integrar culturas rivais é um projeto por si só"]},
+  {t:"Ir sozinho para onde ainda não se está",
+   r:"Levar o que a organização já faz bem para mercados e públicos novos, por conta própria, montando estrutura local em vez de depender de terceiros.",
+   up:["Preserva autonomia e identidade","Diversifica a receita para fora do risco de um só mercado","Aprendizado fica dentro de casa"],
+   dn:["Investimento alto por mercado e retorno lento","Exige competência que a organização ainda não tem","Um fracasso lá fora queima capital conquistado aqui"]},
+  {t:"Construir algo que ainda não existe",
+   r:"Criar um produto, uma plataforma ou uma operação inteiramente nova, do zero, dividindo o risco e o investimento com parceiros.",
+   up:["Liberdade total para desenhar a solução certa","Parceiros reduzem o capital exposto e trazem competência","Cria ativo próprio, difícil de copiar"],
+   dn:["Custa mais e demora mais que qualquer alternativa","Depende de coordenar muita gente de fora","Se o mercado mudar no meio do caminho, o investimento vira passivo"]}
+ ]
+},
+{
+ n:3, nome:"A fórmula vencedora envelheceu",
+ pergunta:"O contexto mudou e o que trouxe a organização até aqui já não basta. O que fazer com a fórmula?",
+ cenario:[
+  "A organização chegou longe com uma fórmula que ela mesma construiu. Agora o contexto virou: tecnologia nova, concorrente novo, consumidor novo ou capital mais caro.",
+  "Não decidir também é uma decisão — e, aqui, é a decisão de perder relevância por inércia. Mas repetir o movimento que deu certo da última vez é perigoso: o que funcionou foi a leitura do contexto daquela época, não a jogada em si.",
+  "A liderança tem recursos e reputação. É a primeira vez que ela decide de uma posição de força — e é justamente por isso que o erro aqui custa mais caro."
+ ],
+ guia:[
+  "O que exatamente envelheceu: o produto, o canal, a tecnologia ou o modelo de negócio?",
+  "A organização consegue desenvolver sozinha o que falta, e em quanto tempo?",
+  "Qual decisão vocês conseguiriam defender daqui a dez anos, mesmo que não desse certo?"
+ ],
+ caminhos:[
+  {t:"Comprar de fora o que falta",
+   r:"Adquirir uma empresa que já tenha a marca, a tecnologia ou o acesso a mercado que a organização não tem — e integrá-la.",
+   up:["Entrada imediata em um espaço novo","Compra capacidade que levaria anos para construir","Sinaliza ambição ao mercado e ao próprio time"],
+   dn:["Preço alto por algo que a organização ainda não sabe operar","Integrar cultura e gestão à distância é o problema real","Se a tese falhar, o prejuízo aparece no balanço inteiro"]},
+  {t:"Evoluir o que já existe",
+   r:"Renovar por dentro o que funciona — nova geração do mesmo produto ou modelo —, com menos risco e menos custo do que recomeçar.",
+   up:["Risco técnico e financeiro muito menores","Aproveita base instalada, clientes e cadeia de parceiros","Permite priorizar onde há demanda real"],
+   dn:["Herda as limitações do projeto original","Pode ser lido como resposta conservadora demais","Reduz a liberdade de ocupar espaços realmente novos"]},
+  {t:"Apostar na escala",
+   r:"Crescer até um tamanho que mude o jogo, consolidando o setor — mesmo que isso custe autonomia, controle ou identidade.",
+   up:["Tamanho vira vantagem permanente de custo e poder","Define as regras do setor em vez de reagir a elas","Atrai capital e talento de outro patamar"],
+   dn:["Custa autonomia e, às vezes, o controle da própria empresa","Complexidade cresce mais rápido que o resultado","A leitura do movimento nunca será unânime"]}
+ ]
+}];
+
+/* ---------------- artes de revelação, uma por organização ---------------- */
+const ART = {
+A:`<svg viewBox="0 0 900 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Linha industrial de envase"><defs><linearGradient id="aA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16294F"/><stop offset="1" stop-color="#070E20"/></linearGradient></defs><rect width="900" height="400" fill="url(#aA)"/><g opacity=".45" stroke="#24376B"><path d="M0 300h900M0 252h900M0 204h900"/></g><rect x="40" y="316" width="820" height="12" rx="6" fill="#2F4480"/><g fill="none" stroke="#FFC831" stroke-width="3">${[0,1,2,3,4,5,6].map(i=>`<rect x="${70+i*116}" y="226" width="60" height="88" rx="9"/><path d="M${83+i*116} 226v-20a17 17 0 0 1 34 0v20"/>`).join("")}</g><g fill="#FFC831" opacity=".26">${[0,1,2,3,4,5,6].map(i=>`<rect x="${75+i*116}" y="${262-i*5}" width="50" height="${48+i*5}" rx="5"/>`).join("")}</g><g stroke="#227DBF" stroke-width="2.6" fill="none" opacity=".85"><path d="M40 150h150l50-42h150l50 56h150l50-74h160"/></g><circle cx="860" cy="90" r="9" fill="#FFC831"/></svg>`,
+B:`<svg viewBox="0 0 900 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Produto de consumo em vitrine"><defs><linearGradient id="aB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1B2142"/><stop offset="1" stop-color="#070E20"/></linearGradient></defs><rect width="900" height="400" fill="url(#aB)"/><g opacity=".4" stroke="#24376B">${[0,1,2,3,4,5,6,7,8].map(i=>`<path d="M${50+i*100} 30v340"/>`).join("")}</g><g transform="translate(372 48)"><path d="M78 0C118 0 148 30 148 72c0 52-16 104-16 134 0 28-23 48-54 48s-54-20-54-48C24 176 8 124 8 72 8 30 38 0 78 0z" fill="#101C3C" stroke="#FFC831" stroke-width="3"/><path d="M78 68 38 32M78 68l40-36M78 68v112" stroke="#FFC831" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="78" cy="68" r="10" fill="#FFC831"/></g><g fill="none" stroke="#227DBF" stroke-width="2.4" opacity=".8"><path d="M60 324c70-22 112-8 164 12"/><path d="M676 338c70-30 120-16 170 8"/></g></svg>`,
+C:`<svg viewBox="0 0 900 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Aeronave em ascensão"><rect width="900" height="400" fill="#0A1228"/><g stroke="#1E2E59" opacity=".7">${[0,1,2,3,4,5].map(i=>`<path d="M0 ${60+i*62}h900"/>`).join("")}</g><g transform="translate(250 112) rotate(-9)"><path d="M0 54c0-14 22-24 70-26l224-10c62-2 108 2 150 12l68 16-68 16c-42 10-88 14-150 12l-224-10C22 64 0 70 0 54z" fill="#101C3C" stroke="#FFC831" stroke-width="3"/><path d="M178 50 112 0h42l96 46zM178 58l-66 50h42l96-46z" fill="#101C3C" stroke="#FFC831" stroke-width="2.6"/><path d="M42 48 6 12h26l48 36z" fill="#FFC831" opacity=".6"/><g fill="#227DBF">${[0,1,2,3,4,5,6,7,8].map(i=>`<circle cx="${156+i*34}" cy="47" r="4.2"/>`).join("")}</g></g><path d="M40 344Q340 318 870 72" stroke="#FFC831" stroke-width="2.4" fill="none" opacity=".5" stroke-dasharray="11 11"/></svg>`,
+D:`<svg viewBox="0 0 900 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Rede de pontos conectados a uma tela"><rect width="900" height="400" fill="#0A1228"/><rect x="330" y="86" width="240" height="228" rx="20" fill="#101C3C" stroke="#FFC831" stroke-width="3"/><rect x="352" y="112" width="196" height="160" rx="8" fill="none" stroke="#2F4480" stroke-width="2"/><g fill="#FFC831" opacity=".55">${[0,1,2,3,4,5].map(i=>`<rect x="${368+(i%3)*58}" y="${128+Math.floor(i/3)*62}" width="44" height="44" rx="8"/>`).join("")}</g><circle cx="450" cy="292" r="8" fill="#FFC831"/><g stroke="#227DBF" stroke-width="2" fill="none" opacity=".85"><path d="M330 200 150 110M330 240 140 300M570 200 760 108M570 240 756 300M450 86 450 30M450 314 450 372"/></g><g fill="#227DBF">${[[150,110],[140,300],[760,108],[756,300],[450,30],[450,372]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="10"/>`).join("")}</g></svg>`,
+E:`<svg viewBox="0 0 900 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Rotor industrial e engrenagens"><rect width="900" height="400" fill="#0A1228"/><g opacity=".4" stroke="#24376B">${[0,1,2,3,4].map(i=>`<path d="M0 ${70+i*66}h900"/>`).join("")}</g><g transform="translate(450 200)"><circle r="118" fill="none" stroke="#FFC831" stroke-width="3"/><circle r="82" fill="none" stroke="#2F4480" stroke-width="2.4"/><circle r="26" fill="#FFC831"/>${[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>{const a=i*30*Math.PI/180;return `<path d="M${Math.cos(a)*118} ${Math.sin(a)*118}L${Math.cos(a)*142} ${Math.sin(a)*142}" stroke="#FFC831" stroke-width="10" stroke-linecap="round"/>`}).join("")}${[0,1,2,3,4,5].map(i=>{const a=i*60*Math.PI/180;return `<path d="M${Math.cos(a)*26} ${Math.sin(a)*26}L${Math.cos(a)*82} ${Math.sin(a)*82}" stroke="#2F4480" stroke-width="5"/>`}).join("")}</g><g stroke="#227DBF" stroke-width="2.4" fill="none" opacity=".8"><path d="M40 200h212M648 200h212"/></g><circle cx="40" cy="200" r="9" fill="#227DBF"/><circle cx="860" cy="200" r="9" fill="#227DBF"/></svg>`
+};
+
+/* ---------------- as cinco organizações ---------------- */
+const EMPRESAS = {
+A:{
+ codigo:"A", rotulo:"Organização industrial de grande porte, com marca de alcance nacional",
+ real:{nome:"Brahma · AmBev", sigla:"AB", hoje:"Hoje integra a AB InBev, a maior cervejaria do mundo."},
+ perfil:{
+  porte:"Grande indústria, com fábricas espalhadas pelo país e distribuição capilar",
+  capital:"Recém-adquirida por um grupo de investidores. Há caixa para investir, mas a margem operacional é baixa",
+  estrutura:"Hierarquia tradicional, com forte autonomia das unidades fabris e das filiais de venda",
+  areas:"Produção, Logística, Comercial, Marketing, Administrativo e Financeiro. Não existe área de gestão por indicadores",
+  cultura:"Recém-chegada do mercado financeiro: meritocrática, exigente, impaciente e pouco afeita a processo",
+  momento:"Novos controladores assumiram o comando e colocaram um sócio na presidência"
+ },
+ momentos:[
+ {
+  dilema:1, caminho:0, ano:"1990 – 1991",
+  cego:{
+   resumo:"A operação revela problemas básicos. Uma mesma linha de produção chega a fabricar produtos diferentes ao longo de um único dia, não há padronização entre as fábricas e a empresa não sabe quanto vende por ponto de venda nem a que preço.",
+   num:[["Preços do setor","Tabelados pelo governo"],["Padronização fabril","Inexistente"],["Dado de ponto de venda","Não medido"],["Rotatividade","Alta, sem causa conhecida"]],
+   pressoes:["O governo condiciona o reajuste de preços a ganho de produtividade","Os novos controladores prometeram transformação rápida","A concorrente direta é líder histórica em várias praças","Executivos veteranos não conseguem explicar a própria operação"]
+  },
+  rev:{
+   titulo:"A indústria que contratou um professor de engenharia para aprender a se medir",
+   situacao:"Em 1989 o Banco Garantia comprou a Brahma e colocou Marcel Telles na direção. Chegou uma cultura de mercado financeiro — meritocracia, remuneração variável, trainees — sem método industrial junto. O país vivia hiperinflação e os preços da cerveja eram tabelados.",
+   porque:"Em 1991, ao buscar autorização para reajustar preços, a liderança ouviu da Secretária Nacional de Economia, Dorothea Werneck, uma contrapartida: em vez de repassar preço, procurar o consultor Vicente Falconi e aprender sobre produtividade.",
+   decisao:"Contratou Falconi, que levou especialistas japoneses para ensinar qualidade total e implantou método, padronização e medição. Sobre essa base vieram metas desdobradas para todos os níveis hierárquicos, atreladas à remuneração variável, mais o Orçamento Base Zero e um programa de trainees.",
+   resultado:"Descobertas simples sobre o ponto de venda melhoraram as decisões comerciais: em menos de quatro anos a participação de mercado em Recife mais que triplicou, chegando a 14,2%. O modelo virou padrão do grupo e é hoje copiado até por quem critica o estilo.",
+   apr:"Disciplina não é intensidade, é método. A liderança já tinha ambição e exigência; faltava a capacidade de medir. Sem medição, cobrança vira pressão.",
+   fontes:[["Exame — Estilo do fundo 3G Capital é copiado até por quem o critica","https://exame.com/negocios/estilo-3g-capital-e-copiado-ate-por-quem-o-critica/"],["Exame — As lições de gestão de Jorge Paulo Lemann","https://exame.com/revista-exame/as-licoes-de-lemann/"],["InfoMoney — Marcel Herrmann Telles e a cultura da Brahma","https://www.infomoney.com.br/perfil/marcel-herrmann-telles/"],["Época Negócios — O legado de Lemann","https://mestredasfinancas.wordpress.com/2013/10/02/reportagem-antiga-sobre-o-banco-garantia-epoca-negocios/"]]
+  }
+ },
+ {
+  dilema:2, caminho:0, ano:"1999",
+  cego:{
+   resumo:"A organização virou referência de gestão, mas o mercado onde atua é disputado há um século com uma rival do mesmo porte — enquanto um grupo internacional cresce no país. A rival lançou uma linha de preço agressivo que atingiu o maior patamar de sua história, tomando mercado inclusive dela própria.",
+   num:[["Share combinado possível","~70% do mercado"],["Linha de combate da rival","7,3% de share, no pico"],["Quem decide o movimento","Órgão antitruste"],["Terceiro concorrente","Grupo internacional em expansão"]],
+   pressoes:["Guerra de preço corrói a margem das duas líderes ao mesmo tempo","O concorrente internacional ganha espaço enquanto as duas brigam","Um movimento desse porte vira assunto político e de opinião pública","O regulador pode aprovar, impor condições ou desfazer o negócio"]
+  },
+  rev:{
+   titulo:"As duas rivais centenárias se fundiram — e passaram oito meses pagando a conta regulatória",
+   situacao:"Em 1999 Brahma e Antarctica disputavam o mercado brasileiro de cerveja enquanto a Kaiser crescia. A Bavaria, da Antarctica, atingira 7,3% de share entre outubro de 1998 e janeiro de 1999, em boa parte tomando mercado da própria Antarctica.",
+   porque:"A fusão encerraria uma guerra de preço de décadas e criaria escala para competir fora do país. O preço era enfrentar um processo antitruste capaz de desfazer o negócio.",
+   decisao:"Anunciaram a fusão em 1º de julho de 1999, criando a AmBev. Duas semanas depois o CADE suspendeu as operações das duas empresas. Pareceres técnicos chegaram a sugerir a venda de Skol, Brahma ou Antarctica — consideradas inviáveis pela companhia.",
+   resultado:"Em 30 de março de 2000 o CADE aprovou por 4 votos a 1, com restrições: venda da marca Bavaria e de cinco fábricas a um mesmo comprador, compartilhamento da rede de distribuição por quatro anos renováveis por dois, manutenção do nível de emprego e prazo de oito meses. A Kaiser recorreu à Justiça.",
+   apr:"Decidir não é anunciar. Entre o anúncio e o resultado houve oito meses de execução sob condições que a liderança não escolheu.",
+   fontes:[["Folha de Londrina — CADE aprova AmBev com restrições","https://www.folhadelondrina.com.br/economia/cade-aprova-ambev-com-restricoes-274511.html"],["Diário do Grande ABC — CADE aprova fusão da Brahma e Antarctica","https://www.dgabc.com.br/Noticia/340140/cade-aprova-fusao-da-brahma-e-antarctica"],["Revista Gestão e Planejamento (UNIFACS) — Cerveja Bavaria","https://revistas.unifacs.br/index.php/rgb/article/download/154/157"]]
+  }
+ },
+ {
+  dilema:3, caminho:2, ano:"2004",
+  cego:{
+   resumo:"A organização é líder no continente e a quinta maior do mundo em volume. O setor se consolida globalmente e os maiores concorrentes são europeus e americanos. Um par estrangeiro, maior que ela, propõe uma combinação por troca de ações e ativos.",
+   num:[["Posição global","5ª maior do mundo"],["Posição do parceiro proposto","3ª maior do mundo"],["Valor da operação","US$ 11,5 bilhões"],["Efeito sobre o controle","Passaria a ser indireto"]],
+   pressoes:["Quem ficar sozinho na consolidação global fica pequeno","Acionistas minoritários questionam quem ganha com a estrutura","Abrir mão do controle direto é irreversível na prática","A janela de negociação com um parceiro desse porte não se repete"]
+  },
+  rev:{
+   titulo:"Os controladores deixaram de ser sócios diretos — e passaram a comandar a maior do mundo",
+   situacao:"Em 2004 a AmBev era líder nas Américas e quinta maior cervejaria do mundo em volume. O setor se consolidava e a belga Interbrew, terceira maior, propôs uma combinação.",
+   porque:"A estrutura trocava controle direto por escala global: os controladores brasileiros passariam a deter uma fatia relevante da empresa belga, enquanto a holding estrangeira passaria a deter a maioria das ações da companhia brasileira.",
+   decisao:"Anunciaram a combinação em 3 de março de 2004 e a concluíram em 27 de agosto, criando a InBev, com sede em Leuven. No mesmo ano a AmBev captou cerca de R$ 6 bilhões em oferta de ações.",
+   resultado:"A InBev nasceu como a maior cervejaria do mundo, com cerca de 14% do mercado global, e em 2008 comprou a Anheuser-Busch por US$ 52 bilhões. A leitura nunca foi unânime: analistas da época avaliaram a operação como excepcional para os controladores e discutível para a AmBev e seus minoritários.",
+   apr:"Nem toda decisão acertada é confortável. Liderar uma consolidação global exigiu abrir mão do que parecia inegociável — e conviver com quem leu o mesmo movimento de outro jeito.",
+   fontes:[["AB InBev — Interbrew and AmBev complete combination (PDF, 2004)","https://www.ab-inbev.com/content/dam/universaltemplate/ab-inbev/news/press-releases/public/2004/8/139-ENGLISH.pdf"],["IstoÉ Dinheiro — AmBev, a dona do mundo?","https://istoedinheiro.com.br/ambev-a-dona-do-mundo"],["RAUSP/USP — Da fusão Antarctica/Brahma à fusão com a Interbrew","https://revistas.usp.br/rege/en/article/download/36525/39246/43062"]]
+  }
+ }]
+},
+
+B:{
+ codigo:"B", rotulo:"Organização industrial dona de um portfólio de marcas de consumo",
+ real:{nome:"Havaianas · Alpargatas", sigla:"HA", hoje:"Uma das marcas brasileiras mais conhecidas no mundo."},
+ perfil:{
+  porte:"Grande indústria nacional, com uma unidade de altíssimo volume e várias marcas no portfólio",
+  capital:"Operação ainda lucrativa, mas com margem baixa e receita do principal produto em queda há cinco anos",
+  estrutura:"Organização por marcas, com Marketing centralizado e forte dependência de distribuidores e atacado",
+  areas:"Industrial, Marketing, Comercial, Exportação (incipiente), Financeiro e Recursos Humanos",
+  cultura:"Tradicional e orientada a produto: a empresa acredita que qualidade técnica vende sozinha",
+  momento:"O produto principal é líder absoluto da categoria, tecnicamente irretocável e culturalmente desvalorizado"
+ },
+ momentos:[
+ {
+  dilema:1, caminho:1, ano:"1993 – 1994",
+  cego:{
+   resumo:"O produto é tecnicamente impecável e todo mundo o conhece. Durante três décadas isso bastou. Mas ele carrega um estigma social, quase não chega aos pontos de venda especializados e é vendido como item de prateleira comum.",
+   num:[["Pico de vendas (1988)","~88 milhões de unidades"],["Vendas em 1993","~65 milhões de unidades"],["Queda no período","mais de 25% em volume"],["Presença no varejo especializado","Praticamente nula"]],
+   pressoes:["Cinco anos consecutivos de queda no produto que é a identidade da empresa","Margem baixa impede disputar preço com similares","O varejo especializado não enxerga valor no produto","Mexer no preço pode afastar a base histórica de consumidores"]
+  },
+  rev:{
+   titulo:"A empresa não mudou a sandália. Mudou quem ela dizia que usava a sandália.",
+   situacao:"As vendas das Havaianas caíram de cerca de 88 milhões de pares em 1988 para aproximadamente 65 milhões em 1993. A comunicação sempre falara de atributos tangíveis — não deforma, não solta a tira, não tem cheiro — e o produto era vendido como item de supermercado, com estigma de chinelo para quem não podia pagar mais.",
+   porque:"O diagnóstico interno apontou que a queda não vinha do produto, e sim do significado e do canal. Em paralelo, surfistas já usavam o modelo tradicional virado do avesso nas praias — um sinal cultural que ninguém pedira.",
+   decisao:"Em 1994 lançou as Havaianas Top: monocromática, cores fortes, salto ligeiramente mais alto, embalagem própria, preço maior e distribuição em lojas especializadas de calçados. Com a AlmapBBDO, a comunicação deixou os atributos e passou a mostrar quem usa, com figuras públicas e linhas segmentadas.",
+   resultado:"Já no primeiro ano a linha Tradicional recuperou volume e a Top passou a representar 12% das vendas do produto. A marca deixou de ser commodity e chegou a cerca de 85% de participação na categoria no Brasil. A estratégia de 1994 nunca foi substituída, apenas adaptada.",
+   apr:"Quando um produto bom para de vender, o defeito raramente está no produto. E o mercado às vezes já está dando a resposta de graça, se alguém olhar.",
+   fontes:[["UFRJ/Pantheon — Efeito Cinderela: o reposicionamento da marca Havaianas","https://pantheon.ufrj.br/bitstream/11422/607/1/GCamargo.pdf"],["Meio & Mensagem — Havaianas: as pegadas que todos querem seguir","https://marcas.meioemensagem.com.br/havaianas/"],["Gazeta do Povo — Havaianas, a marca que bate a China","https://www.gazetadopovo.com.br/economia/havaianas-a-marca-que-bate-a-china-a6ayk70ih1iw3e01a6ije7iha/"]]
+  }
+ },
+ {
+  dilema:2, caminho:1, ano:"2000 – 2001",
+  cego:{
+   resumo:"O reposicionamento funcionou e a organização é líder absoluta em casa. A operação externa existe há anos, mas é modesta: vai para países vizinhos com a mesma lógica de preço e canal usada no mercado doméstico. A aposta natural da casa é outra marca do portfólio, com apelo internacional mais óbvio.",
+   num:[["Operação externa desde","1994, em países vizinhos"],["Peso no faturamento","Baixo e pouco relevante"],["Aposta interna preferida","Outra marca do portfólio"],["Posição no mercado doméstico","Liderança consolidada"]],
+   pressoes:["A marca preferida pela casa parece a escolha óbvia para quem olha de fora","O produto é facilmente copiado por similares em qualquer mercado","Entrar pelo varejo de alto valor é caro e lento","Um fracasso lá fora queimaria o capital conquistado em casa"]
+  },
+  rev:{
+   titulo:"A empresa apostou na marca errada — segundo todo mundo, menos quem decidiu",
+   situacao:"Em 2000 a Alpargatas contratou Angela Hirata para internacionalizar. A aposta da casa era a Topper, ligada ao esporte, com apelo que parecia maior.",
+   porque:"Hirata escolheu a Havaianas justamente pelo diferencial e pelo desafio que representava, e definiu que o que seria exportado era a marca, não o produto.",
+   decisao:"Elegeu países formadores de opinião — Austrália, Brasil, Estados Unidos, França, Inglaterra, Itália e Japão — com estratégia própria para cada um. Na França, a entrada foi por uma mostra sobre a América Latina nas Galeries Lafayette, com Raí como garoto-propaganda. Nos Estados Unidos, 61 pares customizados foram entregues aos indicados ao Oscar de 2003, ano em que as sandálias também desfilaram com Jean-Paul Gaultier.",
+   resultado:"O sucesso em Paris abriu Itália, Inglaterra, Bélgica, Suíça, Grécia e Mônaco. As exportações passaram de 4% da receita no 1º semestre de 2003 para 7% no mesmo período de 2004, e as vendas externas de um semestre superaram, em dólares, todo o ano anterior. O produto chegou a custar cerca de 100 libras em lojas de estilistas.",
+   apr:"A escolha mais óbvia nem sempre é a mais forte. A liderança escolheu o ativo mais difícil de vender porque era o único verdadeiramente diferente.",
+   fontes:[["Coletiva.net — Mudar a estratégia sem mudar o conceito do produto","https://coletiva.net/noticias/mudar-a-estrategia-sem-mudar-o-conceito-do-produto/"],["Antenna Web — Análise da marca Havaianas","https://www.antennaweb.com.br/edicao1/cases/hav.htm"],["ISCTE-IUL — Sandálias Havaianas: decisão estratégica de internacionalização","https://repositorio.iscte-iul.pt/bitstream/10071/4910/1/Miguel%20Sousa%20-%20ISCTE%20Mestrado%202012.pdf"]]
+  }
+ },
+ {
+  dilema:3, caminho:0, ano:"2021",
+  cego:{
+   resumo:"A marca principal é global e madura, e o crescimento desacelerou. O momento é de juros muito baixos. Surge a oportunidade de comprar quase metade de uma empresa estrangeira nativa digital, com forte apelo de sustentabilidade, mais de 200 patentes e operação própria na Ásia.",
+   num:[["Valor da operação","Até US$ 475 milhões (~R$ 2,7 bi)"],["Participação","49,9% do capital"],["Preço do novo ativo","~US$ 100 acima do produto principal"],["Financiamento","Emissão de novas ações"]],
+   pressoes:["Juros baixos estimulam movimentos ousados de expansão","O produto principal perde ritmo de crescimento e rentabilidade","O mercado doméstico não conhece a empresa que seria adquirida","A organização já tentou e abandonou outras marcas do próprio portfólio"]
+  },
+  rev:{
+   titulo:"A compra foi feita. Quatro anos depois, a companhia decidiu não comprar o resto.",
+   situacao:"Em dezembro de 2021, com juros baixos e a ambição declarada de ser uma casa de marcas globais, digitais e sustentáveis, a Alpargatas anunciou a aquisição de 49,9% da Rothy's, marca californiana de calçados feitos com material reciclado.",
+   porque:"A tese era usar a Rothy's para acelerar a internacionalização da Havaianas, especialmente na China, onde a marca americana tinha fábrica.",
+   decisao:"Pagou até US$ 475 milhões — cerca de R$ 2,7 bilhões — com emissão de novas ações. Analistas avaliaram a operação como positiva, mas pediram cautela: era uma marca com a qual não estavam familiarizados.",
+   resultado:"A ação caiu quase 5% já no anúncio. A marca nunca foi trazida ao Brasil; a companhia reconheceu impairment de R$ 1,1 bilhão e, em 2024, EBITDA negativo de R$ 156 milhões na operação internacional. Em novembro de 2025, sob o terceiro CEO do período, decidiu não exercer a opção de comprar o controle, ficando com cerca de 49% e voltando o foco para a Havaianas.",
+   apr:"Ambição sem foco aparece no balanço. Mas a decisão mais difícil veio depois: reconhecer o erro de rota e escolher não dobrar a aposta.",
+   fontes:[["Brazil Journal — Alpargatas agora é 'compra' no UBS","https://braziljournal.com/alpargatas-agora-e-compra-no-ubs-veja-os-cinco-motivos"],["InvestNews — Alpargatas volta às origens com foco em Havaianas","https://investnews.com.br/negocios/alpargatas-havaianas-foco-crescimento/"],["Fusões & Aquisições — Alpargatas decide não comprar restante das ações da Rothy's","https://fusoesaquisicoes.com/hr/alpargatas-decide-nao-comprar-restante-das-acoes-da-rothys/"]]
+  }
+ }]
+},
+
+C:{
+ codigo:"C", rotulo:"Organização de controle estatal, com engenharia própria e ciclos longos",
+ real:{nome:"Embraer", sigla:"EM", hoje:"Terceira maior fabricante de jatos comerciais do mundo."},
+ perfil:{
+  porte:"Grande organização industrial, com corpo técnico próprio e projetos que levam anos até gerar receita",
+  capital:"Caixa esgotado. Dívida acumulada superior a US$ 900 milhões e prejuízo recorrente",
+  estrutura:"Controle estatal, com decisões sujeitas a orçamento público e a prioridades de governo",
+  areas:"Engenharia e Desenvolvimento, Produção, Suporte, Comercial, Defesa, Administrativo e Financeiro",
+  cultura:"Orgulho técnico elevado e aversão a abandonar projeto começado",
+  momento:"A demanda do principal mercado encolheu no mundo todo e o país vive hiperinflação"
+ },
+ momentos:[
+ {
+  dilema:1, caminho:2, ano:"1993 – 1994",
+  cego:{
+   resumo:"Dois projetos de desenvolvimento disputam o mesmo dinheiro que a organização não tem. Um está adiantado e quase pronto para ser certificado. O outro mal saiu do papel, já foi suspenso uma vez, mas aponta para um mercado maior. Por ser estatal, a empresa não consegue crédito de desenvolvimento.",
+   num:[["Receita 1989 → 1994","US$ 700 mi → US$ 177 mi"],["Prejuízo em 1994","US$ 310 milhões"],["Dívida (1992)","US$ 933 milhões"],["Quadro de pessoal","13.000 → 6.100 pessoas"]],
+   pressoes:["O projeto mais avançado é o que está mais perto de gerar receita","A condição de estatal bloqueia o acesso a crédito de desenvolvimento","Mudar o controle acionário é decisão política, não apenas empresarial","O concorrente internacional no mercado maior já está à frente"]
+  },
+  rev:{
+   titulo:"A empresa abandonou o projeto quase pronto e apostou tudo no que mal existia",
+   situacao:"As vendas da Embraer caíram de cerca de US$ 700 milhões em 1989 para US$ 177 milhões em 1994, com prejuízo de US$ 310 milhões e dívida de US$ 933 milhões em 1992. O fim da Guerra Fria reduzira as compras militares e a Guerra do Golfo castigara as companhias aéreas.",
+   porque:"Na mesa estavam o turboélice CBA 123 Vector, que já voara em 1990 e estava adiantado, e o jato regional ERJ-145, lançado em 1989 e suspenso por seis meses em 1990. A intenção inicial de Ozires Silva era adiar o ERJ-145; os representantes da empresa nos Estados Unidos o convenceram do contrário, com base na perspectiva de mercado dos jatos regionais.",
+   decisao:"Cancelou o turboélice e concentrou tudo no ERJ-145, que herdou a mesma seção de fuselagem e boa parte do desenvolvimento feito no projeto abandonado. Em paralelo, a privatização: leilão em 7 de dezembro de 1994, com o governo assumindo US$ 700 milhões da dívida, recapitalizando com mais US$ 350 milhões e mantendo golden share. A empresa foi arrematada por R$ 154,2 milhões.",
+   resultado:"O ERJ-145 voou em 11 de agosto de 1995, alcançou 100 entregas dois anos após a primeira, representou 60% das receitas em 1997 e tirou a empresa do vermelho em 1998. Foram construídas 1.231 aeronaves da família. O quadro voltou a crescer, de 6.087 em 1994 para 23.734 funcionários.",
+   apr:"Em crise, o instinto manda terminar o que está mais perto do fim. O que já foi gasto não deve decidir o que vem depois.",
+   fontes:[["BNDES — Embraer: um caso de sucesso com o apoio do BNDES (PDF)","https://web.bndes.gov.br/bib/jspui/bitstream/1408/17642/1/PRArt213368_Embraer_Compl_P.pdf"],["Wikipédia — CBA 123 Vector","https://en.wikipedia.org/wiki/Embraer/FMA_CBA_123_Vector"],["Cavalero — Embraer: a história da única fabricante de aviões do hemisfério sul","https://cavalero.com.br/embraer-a-historia-da-unica-fabricante-de-avioes-do-hemisferio-sul/"],["Snowballer — Embraer: um milagre improvável","https://bysnowballer.substack.com/p/embraer-um-milagre-improvavel"]]
+  }
+ },
+ {
+  dilema:2, caminho:2, ano:"1997 – 1999",
+  cego:{
+   resumo:"O produto que salvou a organização virou o maior sucesso de sua história. Mas o mercado está pedindo uma versão muito maior, numa faixa que fica entre o que ela faz hoje e o que os dois gigantes do setor fazem. Há duas formas de chegar lá: esticar o produto atual, barato e rápido, ou projetar algo novo do zero, caro e lento.",
+   num:[["Produto atual","Líder do seu segmento"],["Lacuna de mercado","Faixa intermediária, acima do portfólio atual"],["Custo da versão derivada","~US$ 450 milhões"],["Custo do projeto do zero","~US$ 850 milhões"]],
+   pressoes:["O concorrente direto disputa o mesmo espaço e pode chegar antes","O projeto do zero quase dobra o investimento de uma empresa recém-recuperada","Os dois gigantes do setor podem descer para essa faixa","Esticar demais um projeto antigo compromete o desempenho"]
+  },
+  rev:{
+   titulo:"Em fevereiro de 1999 a empresa rasgou o projeto barato e começou do zero",
+   situacao:"O ERJ-145 era o maior sucesso da história da Embraer e a disputa com a Bombardier foi tão dura que a OMC concluiu depois que Brasil e Canadá haviam subsidiado ilegalmente seus fabricantes. O mercado pedia aeronaves de 70 a 110 lugares.",
+   porque:"Em março de 1997 a empresa estudava um avião de 70 lugares derivado do ERJ-145, a cerca de US$ 450 milhões. Um projeto totalmente novo custaria quase o dobro, mas daria muito mais liberdade para ocupar bem a faixa.",
+   decisao:"Em fevereiro de 1999 anunciou que abandonara a abordagem derivada em favor de um projeto inteiramente novo. A família E-Jets foi lançada em 14 de junho de 1999, no Paris Air Show, com investimento previsto de US$ 850 milhões e 16 parceiros de risco. Clientes de lançamento: a francesa Régional e a suíça Crossair.",
+   resultado:"A produção começou em 2002 e o E190 voou em 2004. A família passou a atender de 66 a 124 passageiros, recebeu pedidos de clientes tradicionais do rival — Air Canada, Lufthansa — e da JetBlue, levou a Embraer à terceira posição mundial e ultrapassou 2.000 aeronaves entregues.",
+   apr:"O produto que salva uma empresa é também o que a prende. Decidir contra o próprio sucesso custou quase o dobro — e abriu as duas décadas seguintes.",
+   fontes:[["Wikipédia — Embraer E-Jet family","https://en.wikipedia.org/wiki/Embraer_E-Jet_family"],["Revista Pesquisa FAPESP — Embraer flies higher","https://revistapesquisa.fapesp.br/en/embraer-flies-higher/"],["AviaçãoComercial.net — E-Jets: histórico do programa","https://www.aviacaocomercial.net/ejets.htm"]]
+  }
+ },
+ {
+  dilema:3, caminho:1, ano:"2011 – 2013",
+  cego:{
+   resumo:"Os dois gigantes do setor anunciaram novas gerações de seus produtos, com tecnologia mais eficiente. O segmento inteiro ficou mais competitivo e um produto da geração anterior simplesmente não fecha a conta para o cliente. A organização projeta demanda alta para os vinte anos seguintes, mas precisa decidir como atendê-la.",
+   num:[["Demanda projetada (20 anos)","6.400 unidades na faixa"],["Movimento dos concorrentes","Nova geração anunciada"],["Custo de uma nova geração própria","US$ 1,7 bilhão"],["Precedente interno","Da última vez, escolheu o projeto do zero"]],
+   pressoes:["Não decidir já é decidir perder competitividade","Repetir a aposta anterior custaria muito mais do que custou na época","A demanda na faixa de entrada do portfólio está caindo","Os dois gigantes podem descer de faixa e disputar o mesmo cliente"]
+  },
+  rev:{
+   titulo:"A mesma empresa que em 1999 escolheu começar do zero escolheu, em 2013, evoluir",
+   situacao:"Airbus e Boeing anunciaram o A320neo e o 737 MAX, com motores mais modernos e econômicos. Considerava-se que a Embraer teria de responder ou perderia competitividade por inação. A empresa projetava demanda de 6.400 jatos comerciais de até 130 assentos nos vinte anos seguintes.",
+   porque:"Uma nova geração da família existente era, ao mesmo tempo, de menor risco e menor custo do que um projeto inteiramente novo — o oposto da leitura feita em 1999, porque o contexto era outro.",
+   decisao:"Em novembro de 2011, no Dubai Air Show, assumiu o compromisso de desenvolver a segunda geração dos E-Jets. Em junho de 2013, no Paris Air Show, lançou o programa de US$ 1,7 bilhão com três modelos: E175-E2, E190-E2 e E195-E2. Diante da queda de demanda na faixa de 70 assentos, não desenvolveu uma versão redesenhada do menor modelo.",
+   resultado:"O E195-E2 virou o carro-chefe comercial. Em 2025 a Embraer entregou 78 jatos comerciais, 44 deles da família E2, e 244 aeronaves no total. A carteira de pedidos bateu recordes sucessivos: US$ 26,3 bilhões ao fim de 2024, US$ 31,3 bilhões no 3T25 e US$ 34,5 bilhões no 2T26, quando a família E2 ultrapassou 500 pedidos firmes.",
+   apr:"A mesma liderança, duas decisões opostas, e nenhuma delas errada. Copiar a própria decisão anterior é tão arriscado quanto copiar a de outra empresa.",
+   fontes:[["Wikipédia — Embraer E-Jet E2 family","https://en.wikipedia.org/wiki/Embraer_E-Jet_E2_family"],["AirData News — Embraer ends 2025 with 78 commercial jets delivered","https://beta.airdatanews.com/embraer-ends-2025-with-78-commercial-jets-delivered"],["Pontos pra Voar — Carteira de pedidos recorde de US$ 34,5 bilhões","https://pontospravoar.com/embraer-registra-carteira-de-pedidos-recorde-de-us-345-bilhoes-no-segundo-trimestre/"]]
+  }
+ }]
+},
+
+D:{
+ codigo:"D", rotulo:"Organização de capital aberto e atuação nacional, com rede própria de atendimento",
+ real:{nome:"Magazine Luiza", sigla:"ML", hoje:"Uma das maiores varejistas do país e um dos maiores ecossistemas digitais brasileiros."},
+ perfil:{
+  porte:"Centenas de pontos de atendimento próprios espalhados pelo país e milhares de funcionários",
+  capital:"Capital aberto, caixa reforçado por corte de custos, mas no prejuízo e com a ação desvalorizada",
+  estrutura:"Controle familiar na terceira geração, com gestão profissional e forte cultura de pessoas",
+  areas:"Operações, Comercial, Marketing, Logística, Tecnologia, Financeiro e Recursos Humanos",
+  cultura:"Calor humano e proximidade com o cliente como marca registrada; tecnologia ainda é área de apoio",
+  momento:"O país vive a recessão mais profunda em décadas e o setor encolhe mais rápido que a economia"
+ },
+ momentos:[
+ {
+  dilema:1, caminho:1, ano:"2015 – 2016",
+  cego:{
+   resumo:"A recessão derrubou o consumo e o setor da organização encolhe mais rápido que a economia. A empresa fechou o ano no prejuízo depois de um lucro recorde no ano anterior, e as ações perderam cerca de 70% do valor. Uma nova geração assume o comando no meio da crise.",
+   num:[["Receita bruta 2015","R$ 10,5 bilhões (-8,7%)"],["Resultado 2015","Prejuízo de R$ 65,6 milhões"],["Ano anterior","Lucro recorde de R$ 128,6 milhões"],["Ação em 2015","Queda de cerca de 70%"]],
+   pressoes:["O setor recuou cerca de 15% e deve continuar caindo","Estrutura física cara em um momento de queda de vendas","Troca de comando no pior ano da história recente","Investidores que entraram na abertura de capital acumulam perdas"]
+  },
+  rev:{
+   titulo:"A varejista decidiu virar uma empresa digital — sem fechar as lojas",
+   situacao:"O Magazine Luiza fechou 2015 com receita bruta de R$ 10,5 bilhões, queda de 8,7%, e prejuízo líquido de R$ 65,6 milhões, revertendo o lucro recorde de R$ 128,6 milhões de 2014. As ações caíram cerca de 70% no ano. Frederico Trajano assumiu como CEO em janeiro de 2016.",
+   porque:"A leitura foi que a vantagem da empresa não estava no preço nem na escala, mas na integração entre a rede física e a venda online — algo que os concorrentes puros dos dois lados não tinham.",
+   decisao:"Definiu a transformação em um negócio digital com pontos físicos e calor humano. Em paralelo, cortou fundo: renegociou contratos de aluguel, não abriu lojas no primeiro semestre de 2016, negociou com sindicatos, contratou consultoria de reestruturação e reforçou o caixa.",
+   resultado:"Em 2016, enquanto o mercado de móveis e eletroeletrônicos recuava cerca de 15%, as vendas da empresa cresceram 3,6%. O comércio eletrônico avançou 31%, a margem EBITDA praticamente dobrou e a ação subiu mais de 400% no ano — a maior alta da bolsa.",
+   apr:"Em crise, cortar custo mantém a empresa viva; decidir onde ela é diferente é o que a faz crescer. As duas coisas ao mesmo tempo, e não uma no lugar da outra.",
+   fontes:[["Exame — A nova cara da Luiza","https://exame.com/revista-exame/a-nova-cara-da-luiza/"],["Exame — Magazine Luiza corta o que pode e engorda o caixa para 2016","https://exame.com/negocios/magazine-luiza-corta-o-que-pode-e-engorda-o-caixa-para-2016/"],["Magazine Luiza — Relatório da Administração 2015 (PDF)","https://ri.magazineluiza.com.br/Show/Download.aspx?Arquivo=zRRKJ4sUZHhMCILLfnmV+g%3D%3D"],["IstoÉ Dinheiro — Magazine Luiza colhe os frutos","https://www.istoedinheiro.com.br/magazine-luiza-colhe-os-frutos/"]]
+  }
+ },
+ {
+  dilema:2, caminho:2, ano:"2016 – 2019",
+  cego:{
+   resumo:"A virada funcionou e a organização voltou a crescer. Mas o que ela vende é comprado poucas vezes por ano, o que limita a frequência de contato com o cliente e encarece cada venda. Crescer exigiria algo que a empresa não tem: uma plataforma que outros também usem.",
+   num:[["Frequência de compra","Poucas vezes por ano"],["Custo de aquisição","Alto, diluído em poucas compras"],["Concorrentes digitais","Maiores e mais capitalizados"],["Competência de tecnologia","Ainda sendo construída"]],
+   pressoes:["Abrir a própria operação a terceiros significa vender produto de concorrente","Construir tecnologia própria exige talento que o setor não costuma atrair","Plataformas globais crescem no país com bolso muito maior","O investimento aparece no custo antes de aparecer na receita"]
+  },
+  rev:{
+   titulo:"Em vez de vender mais, a empresa decidiu virar a plataforma onde os outros vendem",
+   situacao:"Depois da virada de 2016, o Magalu enfrentava um limite estrutural: móveis e eletrodomésticos são comprados poucas vezes por ano, o que reduz a frequência de contato e encarece proporcionalmente cada cliente conquistado.",
+   porque:"Mais frequência aumentaria as oportunidades de venda, reduziria o custo de aquisição e fortaleceria o relacionamento com o consumidor. Frederico Trajano chegou a definir a ambição como transformar o Magalu no sistema operacional do varejo brasileiro.",
+   decisao:"Investiu pesado em tecnologia própria, criou um marketplace e abriu a operação a vendedores terceiros, transformando logística, pagamento e aplicativo em serviço para outras empresas.",
+   resultado:"As vendas em canais digitais chegaram a 70% da receita em 2021 e a companhia passou a operar como ecossistema, não como rede de lojas. O valor de mercado se multiplicou no período.",
+   apr:"Crescer às vezes não é vender mais do mesmo: é mudar o papel que a organização ocupa na cadeia. Isso exige abrir a casa para quem, até ontem, era concorrente.",
+   fontes:[["IstoÉ Dinheiro — Magazine Luiza colhe os frutos","https://www.istoedinheiro.com.br/magazine-luiza-colhe-os-frutos/"],["Sandbox — Case Magalu: como perder a aposta sem perder o jogo","https://sandbox.ee/case-magalu-como-perder-a-aposta-sem-perder-o-jogo/"],["Exame — Você sabe quantas empresas o Magazine Luiza comprou?","https://exame.com/negocios/quantas-empresas-magazine-luiza-comprou/"]]
+  }
+ },
+ {
+  dilema:3, caminho:0, ano:"2019 – 2021",
+  cego:{
+   resumo:"A organização virou referência e tem valor de mercado alto, ação valorizada e acesso fácil a capital. Mas ainda falta repertório em categorias de compra frequente e em públicos que ela não atende. Existem empresas prontas, já rentáveis, que têm exatamente isso.",
+   num:[["Acesso a capital","Amplo, com ação valorizada"],["Lacuna","Categorias de compra frequente"],["Alternativa pronta","Empresas nativas digitais já rentáveis"],["Maior alvo disponível","~R$ 3,5 bilhões"]],
+   pressoes:["Comprar é rápido, mas integrar cultura e tecnologia é o problema real","Pagar em ações dilui os acionistas atuais","Plataformas globais seguem crescendo no mesmo período","Uma sequência longa de aquisições dispersa o foco da gestão"]
+  },
+  rev:{
+   titulo:"21 empresas em 18 meses: a varejista decidiu comprar o que ainda não sabia fazer",
+   situacao:"Com a ação valorizada e acesso amplo a capital, o Magalu partiu para adquirir competências e categorias que não tinha, em vez de construí-las internamente.",
+   porque:"Faltavam categorias de compra frequente, público novo e capacidades digitais específicas. Como a própria companhia declarou em uma das operações, a aquisição trazia para dentro competências que ela ainda não possuía.",
+   decisao:"Comprou a Netshoes em 2019, avaliada em cerca de US$ 115 milhões a US$ 3,70 por ação, e em julho de 2021 o KaBuM! por cerca de R$ 3,5 bilhões — a maior aquisição de sua história, paga com R$ 1 bilhão à vista e emissão de ações. Ao todo foram 21 empresas adquiridas em 18 meses, entre elas Canaltech, Jovem Nerd e a Hub Fintech, por R$ 290 milhões.",
+   resultado:"O ecossistema se ampliou e as vendas digitais passaram a dominar a receita. Mas o ciclo seguinte foi duro: no segundo trimestre de 2026 as vendas online recuaram 11,9% e a companhia registrou prejuízo líquido ajustado de R$ 50,4 milhões. Em 2026, produtos de Magazine Luiza, KaBuM!, Época Cosméticos e Netshoes passaram a ser vendidos também na Amazon e no Mercado Livre.",
+   apr:"Comprar capacidade é rápido; operar a empresa comprada é que é o trabalho. E uma aposta pode estar certa na tese e ainda assim cobrar caro na execução.",
+   fontes:[["XP — O que saber sobre a compra da Netshoes pelo Magazine Luiza","https://conteudos.xpi.com.br/acoes/relatorios/o-que-saber-sobre-a-compra-da-netshoes-pelo-magazine-luiza/"],["Exame — Magazine Luiza compra KaBuM! por bilhões de reais","https://exame.com/negocios/magazine-luiza-compra-kabum-por-bilhoes-de-reais/"],["Mais Retorno — Magazine Luiza já comprou 21 empresas em 18 meses","https://maisretorno.com/portal/magazine-luiza-ja-comprou-21-empresas-nos-ultimos-18-meses"],["Sandbox — Case Magalu: como perder a aposta sem perder o jogo","https://sandbox.ee/case-magalu-como-perder-a-aposta-sem-perder-o-jogo/"]]
+  }
+ }]
+},
+
+E:{
+ codigo:"E", rotulo:"Organização industrial de controle familiar, com forte base técnica",
+ real:{nome:"WEG", sigla:"WG", hoje:"Multinacional brasileira com fábricas em 18 países e receita de R$ 40,8 bilhões em 2025."},
+ perfil:{
+  porte:"Indústria média para o padrão do setor, concentrada em uma única cidade no interior do país",
+  capital:"Capital próprio e disciplina financeira rígida: a empresa cresce com o que gera, evitando endividamento",
+  estrutura:"Controle familiar e dos fundadores, decisão concentrada e horizonte de muito longo prazo",
+  areas:"Engenharia, Produção, Manutenção, Comercial, Exportação, Financeiro e formação técnica própria",
+  cultura:"Obsessão por fazer bem feito, formação de gente dentro de casa e desconfiança de atalhos",
+  momento:"O mercado local é fechado, os fornecedores são poucos e o que falta precisa vir de muito longe"
+ },
+ momentos:[
+ {
+  dilema:1, caminho:0, ano:"Anos 1970 – 1980",
+  cego:{
+   resumo:"A organização depende de componentes que o mercado local não entrega no prazo nem na qualidade necessária, e importar é caro e demorado. Cada atraso de fornecedor vira atraso de entrega, e cada defeito de terceiro vira reclamação do cliente — mas a empresa não controla nenhum dos dois.",
+   num:[["Fornecimento local","Escasso e irregular"],["Importação","Cara e demorada"],["Controle sobre a qualidade","Fora da empresa"],["Origem do capital","Próprio, sem folga para erro"]],
+   pressoes:["Produzir componente próprio exige competência que a empresa não tem","Verticalizar imobiliza capital que é escasso","Especialistas defendem o contrário: terceirizar e focar no que se sabe fazer","Cada decisão errada aqui compromete anos de caixa"]
+  },
+  rev:{
+   titulo:"A fábrica decidiu fazer em casa o que o mercado não entregava",
+   situacao:"Fundada em 1961 em Jaraguá do Sul por três profissionais, a WEG cresceu num mercado fechado, em que fornecedores locais eram poucos e irregulares e a importação era cara e lenta.",
+   porque:"A alternativa de depender de terceiros deixava fora da empresa o controle de prazo, custo e qualidade — justamente os três atributos que ela queria vender.",
+   decisao:"Optou pela verticalização extrema da produção, passando a fabricar internamente boa parte dos componentes, e investiu em formação técnica própria. Essa escolha se tornou a base da estratégia da companhia, ao lado da flexibilidade financeira e da diversificação.",
+   resultado:"A verticalização deu à WEG flexibilidade de produção e uma estrutura de custos muito mais competitiva, reconhecida por clientes no mercado nacional e internacional. No início dos anos 2000 a empresa alcançava 79% de participação no mercado brasileiro de motores elétricos e, em 2001, seu primeiro R$ 1 bilhão de faturamento.",
+   apr:"Nem toda boa prática de mercado serve para todo contexto. A decisão contrariou o consenso da época — e virou a vantagem competitiva que sustentou as décadas seguintes.",
+   fontes:[["Investing.com — História da WEG e verticalização","https://br.investing.com/academy/statistics/empresa-weg/"],["WEG 60 anos — linha do tempo","https://www.jdv.com.br/weg-2021-60-anos-construindo-o-nosso-futuro-weg-60-anos-na-linha-do-tempo/"],["O Novo Normal — Como a WEG se tornou uma máquina de compra de empresas","https://onovonormal.blog/2024/12/19/como-a-weg-se-tornou-uma-maquina-de-compra-de-empresas-e-chegou-a-17-paises/"]]
+  }
+ },
+ {
+  dilema:2, caminho:1, ano:"1990 – 2005",
+  cego:{
+   resumo:"A organização domina o mercado doméstico e já exporta há anos, mas sempre através de distribuidores locais que ela não controla. O mercado interno não cresce no ritmo da ambição, e cada país exige adaptação de produto, norma técnica e assistência que o distribuidor não entrega.",
+   num:[["Participação no mercado doméstico","Liderança ampla"],["Operação externa","Exportação via distribuidores"],["Estrutura própria no exterior","Nenhuma"],["Faturamento no início dos anos 2000","Primeiro R$ 1 bilhão"]],
+   pressoes:["Depender de distribuidor significa não conhecer o cliente final","Montar estrutura própria lá fora consome capital por muitos anos","Operar em outro país exige gente que a empresa ainda não formou","Concorrentes globais já estão instalados nesses mercados"]
+  },
+  rev:{
+   titulo:"Em vez de exportar de uma fábrica central, a empresa foi morar nos países onde queria vender",
+   situacao:"A WEG exportava desde 1970 para a América Latina e criara a WEG Exportadora em 1988, mas a venda externa dependia de distribuidores. No início dos anos 2000 a companhia faturava R$ 1 bilhão e não tinha nenhuma fábrica fora do Brasil.",
+   porque:"Depender de distribuidores afastava a empresa do cliente final e limitava a adaptação de produto e assistência técnica em cada mercado. A internacionalização da WEG não seguiu o modelo mais comum entre multinacionais, de exportar de uma única fábrica central.",
+   decisao:"Em meados dos anos 1990 abriu subsidiárias próprias no exterior, reduzindo a dependência de distribuidores. Em 2000 comprou suas primeiras fábricas fora do Brasil, na Argentina e no México; em 2002, em Portugal; em 2005 inaugurou fábrica na China e filial em Cingapura.",
+   resultado:"A presença local virou plataforma de crescimento: a companhia passou a crescer mais fora do Brasil do que dentro. Em 2025 a WEG tinha fábricas em 18 países, filiais em 44, mais de 49 mil colaboradores e receita operacional líquida de R$ 40,8 bilhões.",
+   apr:"Ir sozinho custa tempo e capital, mas constrói competência que fica dentro de casa. A empresa escolheu aprender a operar fora em vez de contratar quem já sabia.",
+   fontes:[["Bloomberg Línea — WEG is prepared to seize opportunities in energy transition","https://www.bloomberglinea.com/2024/10/17/weg-is-prepared-to-seize-opportunities-in-energy-transition-says-ceo-alberto-kuba/"],["WEG 60 anos — linha do tempo","https://www.jdv.com.br/weg-2021-60-anos-construindo-o-nosso-futuro-weg-60-anos-na-linha-do-tempo/"],["OCP News — A trajetória que transformou a WEG em potência mundial","https://ocp.news/informe/a-trajetoria-que-transformou-a-weg-em-potencia-mundial"]]
+  }
+ },
+ {
+  dilema:3, caminho:0, ano:"2007 – 2024",
+  cego:{
+   resumo:"A organização virou multinacional e lidera seu mercado, mas a transição tecnológica do setor abre espaços onde ela não tem produto nem tecnologia. Construir tudo do zero levaria uma década. Existem empresas menores, já maduras, com exatamente essas competências — e empresas maiores, com fábricas prontas em mercados onde ela quer escala.",
+   num:[["Posição","Liderança no mercado principal"],["Lacuna","Tecnologias e faixas de produto novas"],["Capital","Disciplina financeira rígida"],["Maior aquisição disponível","US$ 400 milhões, 10 fábricas"]],
+   pressoes:["Desenvolver sozinha a tecnologia nova levaria uma década","Comprar empresa madura em mercado maduro é caro e de retorno lento","Integrar dezenas de operações em países diferentes testa a cultura da casa","Uma sequência de aquisições pode diluir a disciplina de capital"]
+  },
+  rev:{
+   titulo:"A empresa que fazia tudo em casa virou uma máquina de comprar empresas",
+   situacao:"Já multinacional e líder em motores elétricos, a WEG precisava de portfólio e tecnologia para a transição energética e para faixas de produto onde não atuava.",
+   porque:"A estratégia foi explicitada pelo CEO Alberto Kuba em dois pilares: fusões e aquisições de negócios maduros em segmentos onde a WEG já é líder, e aquisição de empresas menores com tecnologias avançadas. Como ele resumiu, as aquisições trazem mais presença de mercado e portfólio com baixo risco.",
+   decisao:"Comprou a HISA, de aerogeradores, em 2007; o Zest Group na África do Sul em 2010; a austríaca Watt Drive em 2011; empresas na Alemanha e na China em 2014; a Balteau, de transformadores, em 2021; nos Estados Unidos, a maior aquisição de sua história, por US$ 400 milhões, somando dez fábricas; e a turca Volt Electric, por US$ 88 milhões, sua 25ª aquisição fora do Brasil.",
+   resultado:"O portfólio deixou de ser só motores e passou a incluir automação, transformadores, geração e transmissão de energia, energia solar e eólica, mobilidade elétrica, tintas e vernizes. Em 2025 a companhia registrou receita operacional líquida de R$ 40,8 bilhões, com fábricas em 18 países e produtos nos cinco continentes.",
+   apr:"A mesma empresa que decidiu fazer tudo em casa quando era pequena decidiu comprar pronto quando ficou grande. O princípio nunca foi verticalizar — era controlar o que define a entrega.",
+   fontes:[["Investing.com — História da WEG e principais aquisições","https://br.investing.com/academy/statistics/empresa-weg/"],["Bloomberg Línea — Os dois pilares da estratégia de aquisições da WEG","https://www.bloomberglinea.com/2024/10/17/weg-is-prepared-to-seize-opportunities-in-energy-transition-says-ceo-alberto-kuba/"],["FIESC — Entrevista com Alberto Kuba: a indústria tem que mirar o mundo","https://fiesc.com.br/pt-br/imprensa/industria-tem-que-mirar-o-mundo"],["OCP News — A trajetória que transformou a WEG em potência mundial","https://ocp.news/informe/a-trajetoria-que-transformou-a-weg-em-potencia-mundial"]]
+  }
+ }]
+}
+};
+
+/* ============================================================ ESTADO ======= */
+const ORDEM_CASES = [["C","E","A","D","B"],["D","B","E","C","A"],["A","B","C","D","E"]];
+const S = {
+  fase:0, etapa:"ctx", grupo:null, grupos:[], respostas:{}, todas:[], midia:{},
+  escolha:null, admin:false, modoLocal:true, dbOK:false, conectando:true, aviso:""
+};
+let db=null, userCap=null, assetsCap=null, downloadsCap=null, podeEditar=false;
+const LS="pesodecisao.v2";
+
+const el=(t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;};
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const agora=()=>new Date().toISOString();
+const chaveResp=(gid,n)=>gid+"__r"+n;
+
+function salvarLocal(){ try{localStorage.setItem(LS,JSON.stringify({grupo:S.grupo,respostas:S.respostas,fase:S.modoLocal?S.fase:undefined}));}catch(e){} }
+function lerLocal(){ try{const d=JSON.parse(localStorage.getItem(LS)||"{}");
+  if(d.grupo)S.grupo=d.grupo; if(d.respostas)S.respostas=d.respostas;
+  if(S.modoLocal&&typeof d.fase==="number")S.fase=d.fase;}catch(e){} }
+let toastT=null;
+function toast(msg){ const o=document.querySelector(".toast"); if(o)o.remove();
+  const t=el("div","toast",esc(msg)); document.body.appendChild(t);
+  clearTimeout(toastT); toastT=setTimeout(()=>t.remove(),4200); }
+
+/* ============================================================ DADOS ======== */
+const empresa=()=>S.grupo?EMPRESAS[S.grupo.empresa]:null;
+const rodadaDaFase=f=>f===2?1:f===4?2:f===6?3:0;
+const revelacaoDaFase=f=>f===3?1:f===5?2:f===7?3:0;
+function caminhosOrdenados(n){
+  const d=DILEMAS[n-1], ord=ORDEM[n-1];
+  return ord.map((idx,pos)=>({...d.caminhos[idx], orig:idx, rotulo:"CAMINHO 0"+(pos+1)}));
+}
+function rotuloDoCaminho(n,idx){ return "CAMINHO 0"+(ORDEM[n-1].indexOf(idx)+1); }
+function momento(cod,n){ return EMPRESAS[cod].momentos[n-1]; }
+const minhaResposta=n=>S.grupo?S.respostas[chaveResp(S.grupo.id,n)]:null;
+const imagem=(cod,n)=>S.midia[cod+"_"+n]||null;
+const logo=cod=>S.midia["logo_"+cod]||null;
+
+/* ============================================================ BANCO ======== */
+async function iniciarBanco(){
+  let c=null; try{ c=(window.claude&&window.claude.use)?window.claude:null; }catch(e){}
+  if(!c){ cairLocal("Modo local: sem conexão com o servidor."); return; }
+  try{ userCap=await c.use("user"); }catch(e){}
+  try{ assetsCap=await c.use("assets"); }catch(e){}
+  try{ downloadsCap=await c.use("downloads"); }catch(e){}
+  try{ podeEditar=userCap?await userCap.canEdit():false; }catch(e){}
+  let d=null; try{ d=await c.use("db"); }catch(e){}
+  if(!d){ cairLocal("Modo local: o banco de dados não está disponível nesta sessão."); return; }
+  db=d; S.dbOK=true; S.modoLocal=false; render();
+  const limite=setTimeout(()=>{ if(S.conectando){S.conectando=false;S.aviso="Sincronização lenta. Os dados podem estar desatualizados.";render();} },10000);
+  try{
+    db.doc("estado/sessao").onSnapshot(s=>{
+      clearTimeout(limite); S.conectando=false; S.aviso="";
+      const v=s.exists?s.data():null, nova=v&&typeof v.fase==="number"?v.fase:0;
+      if(nova!==S.fase){ S.fase=nova; S.etapa="ctx"; S.escolha=null; }
+      render();
+    }, e=>{ clearTimeout(limite); cairLocal("Modo local: "+(e&&e.code==="revoked"?"acesso encerrado.":"não foi possível sincronizar.")); });
+    db.doc("estado/midia").onSnapshot(s=>{ S.midia=s.exists?(s.data()||{}):{}; render(); },()=>{});
+    db.collection("grupos").onSnapshot(s=>{
+      S.grupos=s.docs.map(x=>({id:x.id,...x.data()})).sort((a,b)=>String(a.criadoEm).localeCompare(String(b.criadoEm)));
+      render(); },()=>{});
+    db.collection("respostas").onSnapshot(s=>{
+      S.todas=s.docs.map(x=>({id:x.id,...x.data()}));
+      S.todas.forEach(r=>{S.respostas[r.id]=r;}); salvarLocal(); render(); },()=>{});
+  }catch(e){ clearTimeout(limite); cairLocal("Modo local: não foi possível abrir o banco."); }
+}
+function cairLocal(msg){ S.modoLocal=true; S.dbOK=false; S.conectando=false; S.aviso=msg||""; lerLocal(); render(); }
+async function gravar(caminho,dados){
+  if(!db) return false;
+  try{ await db.doc(caminho).set(dados); return true; }
+  catch(e){
+    if(e&&(e.code==="invalid_argument"||e.code==="revoked")){
+      S.modoLocal=true; S.aviso="Sem permissão de escrita no servidor. A sessão seguiu em modo local neste dispositivo.";
+      salvarLocal(); render();
+    } else toast("Não foi possível salvar agora. Tente novamente.");
+    return false;
+  }
+}
+
+/* ============================================================ AÇÕES ======== */
+async function cadastrar(nome,emp,resp){
+  const id=(nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)||"grupo")+"-"+Math.random().toString(36).slice(2,6);
+  const g={id,nome:nome.trim(),empresa:emp,responsavel:(resp||"").trim(),criadoEm:agora()};
+  S.grupo=g; salvarLocal();
+  if(!S.modoLocal){ const ok=await gravar("grupos/"+id,{nome:g.nome,empresa:g.empresa,responsavel:g.responsavel,criadoEm:g.criadoEm}); if(!ok&&!S.modoLocal)return; }
+  if(S.modoLocal&&!S.grupos.some(x=>x.id===id)) S.grupos.push(g);
+  render();
+}
+async function enviarResposta(n,cm,estrategia,justificativa){
+  const d={grupoId:S.grupo.id,grupoNome:S.grupo.nome,empresa:S.grupo.empresa,rodada:n,
+    caminhoRotulo:cm.rotulo,caminhoTitulo:cm.t,caminhoOrig:cm.orig,
+    dilema:DILEMAS[n-1].nome,estrategia,justificativa,enviadoEm:agora()};
+  S.respostas[chaveResp(S.grupo.id,n)]=d; salvarLocal();
+  if(!S.modoLocal) await gravar("respostas/"+chaveResp(S.grupo.id,n),d);
+  S.etapa="sent"; render();
+}
+async function definirFase(f){
+  S.fase=f; S.etapa="ctx"; S.escolha=null;
+  if(!S.modoLocal) await gravar("estado/sessao",{fase:f,atualizadoEm:agora()}); else salvarLocal();
+  render();
+}
+async function reiniciar(){
+  if(!confirm("Reiniciar a dinâmica? Todos os grupos e respostas serão apagados. As imagens enviadas serão mantidas.")) return;
+  if(!S.modoLocal&&db){
+    try{
+      const gs=await db.collection("grupos").get(); for(const x of gs.docs) await db.doc("grupos/"+x.id).delete();
+      const rs=await db.collection("respostas").get(); for(const x of rs.docs) await db.doc("respostas/"+x.id).delete();
+    }catch(e){ toast("Não foi possível apagar tudo no servidor."); }
+  }
+  S.grupos=[]; S.todas=[]; S.respostas={}; S.grupo=null;
+  try{localStorage.removeItem(LS);}catch(e){}
+  await definirFase(0); toast("Dinâmica reiniciada.");
+}
+async function enviarImagem(chave,file,statusEl){
+  if(!assetsCap||!assetsCap.upload){ toast("Envio de imagens indisponível nesta visualização."); return; }
+  if(file.size>19*1024*1024){ toast("Arquivo acima de 19 MB."); return; }
+  statusEl.textContent="enviando…"; statusEl.className="st";
+  try{
+    const r=await assetsCap.upload(file);
+    const novo={...S.midia}; novo[chave]={url:r.url,id:r.id,em:agora()};
+    const ok=await gravar("estado/midia",novo);
+    if(ok){ S.midia=novo; statusEl.textContent="enviada"; statusEl.className="st ok"; render(); }
+    else statusEl.textContent="falhou";
+  }catch(e){ statusEl.textContent="falhou"; toast("Não foi possível enviar a imagem."); }
+}
+
+/* ============================================================ UI BASE ===== */
+function barraTopo(){
+  const m=document.getElementById("topMeta"); m.innerHTML="";
+  if(S.grupo){ m.appendChild(el("span","pill hot","GRUPO "+esc(S.grupo.nome)));
+    m.appendChild(el("span","pill","ORGANIZAÇÃO "+S.grupo.empresa)); }
+  if(S.conectando) m.appendChild(el("span","pill","Conectando…"));
+  else if(S.modoLocal) m.appendChild(el("span","pill local","Modo local"));
+  else m.appendChild(el("span","pill live","Ao vivo"));
+  const b=el("button","linkish",S.admin?"sair do painel":"facilitador");
+  b.onclick=()=>{S.admin=!S.admin;render();}; m.appendChild(b);
+}
+function barraProgresso(){
+  const box=document.getElementById("steps"); box.innerHTML="";
+  if(S.admin||!S.grupo) return;
+  const s=el("div","steps"), l=el("div","steps-lbl");
+  for(let i=0;i<9;i++) s.appendChild(el("div","step"+(i<S.fase?" done":i===S.fase?" now":"")));
+  l.appendChild(el("span",null,esc(ROTULOS[S.fase])));
+  l.appendChild(el("span",null,"ETAPA "+(S.fase+1)+" / 9"));
+  box.appendChild(s); box.appendChild(l);
+}
+function render(){
+  barraTopo(); barraProgresso();
+  const app=document.getElementById("app"); app.innerHTML="";
+  const v=el("div","screen on");
+  if(S.admin) telaAdmin(v);
+  else if(!S.grupo) telaEntrada(v);
+  else if(S.fase===0) telaSala(v);
+  else if(S.fase===1) telaPerfil(v);
+  else if(rodadaDaFase(S.fase)) telaRodada(v,rodadaDaFase(S.fase));
+  else if(revelacaoDaFase(S.fase)) telaRevelacao(v,revelacaoDaFase(S.fase));
+  else telaFinal(v);
+  app.appendChild(v);
+  if(S.aviso) app.appendChild(el("div","card quiet mt24",'<div class="hint" style="color:#E0B45E">'+esc(S.aviso)+"</div>"));
+}
+
+/* ============================================================ TELAS ======= */
+function telaEntrada(v){
+  v.appendChild(el("div",null,`<div style="padding:34px 0 8px">
+    <div class="kicker">Workshop de desenvolvimento de lideranças</div>
+    <h1 class="hero-title">O PESO<span class="y">DA DECISÃO</span></h1>
+    <p class="lead mt16" style="max-width:560px;font-size:17px">Cinco organizações. Três dilemas. O mesmo problema, cinco realidades diferentes.</p></div>`));
+  const c=el("div","card mt24");
+  c.innerHTML=`<div class="kicker cool">Registro do grupo</div>
+    <h3 class="mb16" style="font-size:19px">Identifiquem-se para começar</h3>
+    <div class="mb16"><label for="iNome">Nome do grupo</label>
+      <input type="text" id="iNome" maxlength="42" placeholder="Ex.: Conselho Norte" autocomplete="off"></div>
+    <div class="mb16"><label>Organização que o grupo recebeu</label><div class="codes" id="codes"></div>
+      <div class="hint">O facilitador distribuiu os códigos antes do início. A identidade real só será revelada no fim.</div></div>
+    <div class="mb16"><label for="iResp">Quem registra (opcional)</label>
+      <input type="text" id="iResp" maxlength="42" placeholder="Nome de quem está com o celular" autocomplete="off"></div>`;
+  const codes=c.querySelector("#codes");
+  CODIGOS.forEach(k=>{
+    const b=el("button","code",'<div class="l">'+k+'</div><div class="s">Organização '+k+"</div>");
+    b.type="button"; b.setAttribute("aria-pressed","false"); b.dataset.k=k;
+    b.onclick=()=>{ codes.querySelectorAll(".code").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true"); chk(); };
+    codes.appendChild(b);
+  });
+  const btn=el("button","btn mt8","ENTRAR NA EXPERIÊNCIA"); btn.disabled=true;
+  const chk=()=>{ const n=c.querySelector("#iNome").value.trim(), k=codes.querySelector('[aria-pressed="true"]');
+    btn.disabled=!(n.length>=2&&k); };
+  c.querySelector("#iNome").addEventListener("input",chk);
+  btn.onclick=()=>{ const k=codes.querySelector('[aria-pressed="true"]');
+    cadastrar(c.querySelector("#iNome").value,k.dataset.k,c.querySelector("#iResp").value); };
+  c.appendChild(btn); v.appendChild(c);
+  if(S.grupos.length) v.appendChild(listaGrupos());
+}
+function listaGrupos(){
+  const g=el("div","card quiet mt16");
+  g.innerHTML='<div class="kicker cool">Grupos conectados · '+S.grupos.length+"</div>";
+  S.grupos.forEach(x=>{
+    const r=el("div","rowitem");
+    r.innerHTML='<div class="badge">'+esc(x.empresa)+'</div><div><div class="nm">'+esc(x.nome)+
+      (S.grupo&&x.id===S.grupo.id?' <span style="color:var(--amber);font-size:12px">· vocês</span>':"")+"</div>"+
+      (x.responsavel?'<div class="sub">'+esc(x.responsavel)+"</div>":"")+"</div>";
+    g.appendChild(r);
+  });
+  return g;
+}
+function telaSala(v){
+  v.appendChild(el("div",null,`<div style="padding:28px 0 4px">
+    <div class="kicker">Grupo registrado</div>
+    <h2 class="sec-title">Aguardando o facilitador iniciar</h2>
+    <p class="lead">Todos os grupos recebem o mesmo dilema ao mesmo tempo. Ninguém avança sozinho.</p></div>`));
+  const c=el("div","card mt16");
+  c.innerHTML=`<div class="dossie-head"><div class="sigla">${esc(S.grupo.empresa)}</div>
+    <div><div class="kicker" style="margin:0 0 4px">Seu grupo</div>
+    <h3 style="font-size:21px">${esc(S.grupo.nome)}</h3>
+    <div class="hint">Vocês comandarão a organização ${esc(S.grupo.empresa)}. ${S.grupo.responsavel?"Registro por "+esc(S.grupo.responsavel)+".":""}</div></div></div>`;
+  v.appendChild(c);
+  v.appendChild(el("div","card quiet mt16",'<div class="wait"><span class="pulse"></span> Esperando a liberação da primeira etapa…</div>'));
+  if(S.grupos.length) v.appendChild(listaGrupos());
+  if(S.modoLocal){ const b=el("button","btn ghost mt16","AVANÇAR (modo local)"); b.onclick=()=>definirFase(1); v.appendChild(b); }
+}
+function telaPerfil(v){
+  const e=empresa(), p=e.perfil;
+  v.appendChild(el("div",null,`<div style="padding:26px 0 4px">
+    <div class="kicker">Dossiê confidencial</div>
+    <h2 class="sec-title">A organização sob o comando de vocês</h2>
+    <p class="lead">Tudo aqui é real: são dados históricos da organização no momento retratado. O que não está aqui é quem ela é.</p></div>`));
+  const c=el("div","card mt16");
+  c.innerHTML=`<div class="dossie-head mb16"><div class="sigla">${esc(e.codigo)}</div>
+    <div><div class="kicker" style="margin:0 0 4px">Organização ${esc(e.codigo)}</div>
+    <h3 style="font-size:19px;line-height:1.3">${esc(e.rotulo)}</h3></div></div>
+    <dl class="kv">
+      <div class="row"><dt>Porte</dt><dd>${esc(p.porte)}</dd></div>
+      <div class="row"><dt>Capital</dt><dd>${esc(p.capital)}</dd></div>
+      <div class="row"><dt>Estrutura</dt><dd>${esc(p.estrutura)}</dd></div>
+      <div class="row"><dt>Áreas existentes</dt><dd>${esc(p.areas)}</dd></div>
+      <div class="row"><dt>Cultura</dt><dd>${esc(p.cultura)}</dd></div>
+      <div class="row"><dt>Momento atual</dt><dd>${esc(p.momento)}</dd></div>
+    </dl>`;
+  v.appendChild(c);
+  v.appendChild(el("div","card quiet mt16",'<div class="wait"><span class="pulse"></span> Leiam o dossiê. O primeiro dilema será liberado pelo facilitador.</div>'));
+  if(S.modoLocal){ const b=el("button","btn ghost mt16","IR PARA O DILEMA 1 (modo local)"); b.onclick=()=>definirFase(2); v.appendChild(b); }
+}
+
+function telaRodada(v,n){
+  const e=empresa(), d=DILEMAS[n-1], mo=momento(e.codigo,n), ja=minhaResposta(n);
+  if(ja) S.etapa="sent";
+  v.appendChild(el("div",null,`<div style="padding:24px 0 4px">
+    <div class="kicker">Dilema 0${n} de 3 · igual para todos os grupos</div>
+    <h2 class="sec-title">${esc(d.nome)}</h2></div>`));
+
+  if(S.etapa==="ctx"){
+    const q=el("div","dilema-box");
+    q.innerHTML='<div class="block-t">A pergunta</div><div class="dilema-q">'+esc(d.pergunta)+"</div>";
+    v.appendChild(q);
+    const c=el("div","card mt12");
+    c.innerHTML='<div class="block-t">O cenário</div>'+d.cenario.map(t=>"<p>"+esc(t)+"</p>").join("");
+    v.appendChild(c);
+
+    const r=el("div","card mt12");
+    r.innerHTML='<div class="block-t">A realidade da organização '+esc(e.codigo)+'</div>'+
+      "<p>"+esc(mo.cego.resumo)+"</p>";
+    v.appendChild(r);
+    const g=el("div","grid g2 mt12");
+    const n1=el("div","card quiet"); n1.innerHTML='<div class="block-t">Números sobre a mesa</div><div class="grid" style="gap:9px">'+
+      mo.cego.num.map(x=>'<div class="stat"><div class="v amber">'+esc(x[1])+'</div><div class="k">'+esc(x[0])+"</div></div>").join("")+"</div>";
+    const n2=el("div","card quiet"); n2.innerHTML='<div class="block-t">Pressões sobre a liderança</div><ul class="bul">'+
+      mo.cego.pressoes.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>";
+    g.appendChild(n1); g.appendChild(n2); v.appendChild(g);
+
+    const gu=el("div","card quiet mt12");
+    gu.innerHTML='<div class="block-t">Para orientar a conversa do grupo</div><ul class="bul cool">'+
+      d.guia.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>";
+    v.appendChild(gu);
+
+    const b=el("button","btn mt24","VER OS CAMINHOS POSSÍVEIS");
+    b.onclick=()=>{S.etapa="paths";render();window.scrollTo({top:0,behavior:"smooth"});};
+    v.appendChild(b);
+  }
+
+  if(S.etapa==="paths"){
+    v.appendChild(el("p","lead mb16","Os mesmos três caminhos estão na mesa de todos os grupos. O que muda é a realidade de onde cada um decide."));
+    const grid=el("div","grid g3");
+    caminhosOrdenados(n).forEach(cm=>{
+      const b=el("button","path"); b.type="button";
+      b.setAttribute("aria-pressed",S.escolha&&S.escolha.rotulo===cm.rotulo?"true":"false");
+      b.innerHTML='<div class="check">✓</div><div class="tag">'+esc(cm.rotulo)+'</div><h4>'+esc(cm.t)+'</h4>'+
+        '<div class="res">'+esc(cm.r)+'</div><div class="vr">'+
+        cm.up.map(x=>'<div class="up"><b>ganho</b><span>'+esc(x)+"</span></div>").join("")+
+        cm.dn.map(x=>'<div class="dn"><b>risco</b><span>'+esc(x)+"</span></div>").join("")+"</div>";
+      b.onclick=()=>{S.escolha=cm;render();};
+      grid.appendChild(b);
+    });
+    v.appendChild(grid);
+    const row=el("div","btn-row");
+    const back=el("button","btn ghost","VOLTAR AO CENÁRIO"); back.onclick=()=>{S.etapa="ctx";render();};
+    const go=el("button","btn","CONFIRMAR CAMINHO"); go.disabled=!S.escolha;
+    go.onclick=()=>{S.etapa="form";render();window.scrollTo({top:0,behavior:"smooth"});};
+    row.appendChild(back); row.appendChild(go); v.appendChild(row);
+  }
+
+  if(S.etapa==="form"){
+    const cm=S.escolha;
+    const head=el("div","card amber mb16");
+    head.innerHTML='<div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--amber)">'+
+      esc(cm.rotulo)+' · caminho escolhido</div><h4 class="mt8" style="font-size:18px">'+esc(cm.t)+"</h4>";
+    v.appendChild(head);
+    const f=el("div","card");
+    f.innerHTML=`<div class="block-t">Construção da estratégia</div>
+      <label for="tEstr">Como vocês executariam essa decisão na organização ${esc(e.codigo)}?</label>
+      <textarea id="tEstr" placeholder="Primeiras ações · recursos utilizados · áreas envolvidas · como acompanhariam os resultados · riscos a administrar"></textarea>
+      <div class="counter" id="cEstr">0 caracteres · mínimo sugerido: 180</div>
+      <div class="hint mb16">Respondam aos cinco pontos: quais seriam as primeiras ações, quais recursos usariam, quais áreas envolveriam, como acompanhariam os resultados e quais riscos precisariam administrar.</div>
+      <label for="tJust">Qual é a principal justificativa para essa decisão?</label>
+      <textarea id="tJust" style="min-height:96px" placeholder="Por que este caminho faz sentido para a realidade desta organização, e não os outros dois"></textarea>
+      <div class="counter" id="cJust">0 caracteres</div>`;
+    v.appendChild(f);
+    const tE=f.querySelector("#tEstr"), tJ=f.querySelector("#tJust");
+    const cE=f.querySelector("#cEstr"), cJ=f.querySelector("#cJust");
+    const env=el("button","btn","REGISTRAR A DECISÃO DO GRUPO"); env.disabled=true;
+    const chk=()=>{
+      cE.textContent=tE.value.length+" caracteres · mínimo sugerido: 180";
+      cE.className="counter"+(tE.value.trim().length>=180?" ok":"");
+      cJ.textContent=tJ.value.length+" caracteres";
+      cJ.className="counter"+(tJ.value.trim().length>=40?" ok":"");
+      env.disabled=!(tE.value.trim().length>=60&&tJ.value.trim().length>=20);
+    };
+    tE.addEventListener("input",chk); tJ.addEventListener("input",chk);
+    env.onclick=()=>{env.disabled=true;env.textContent="REGISTRANDO…";enviarResposta(n,cm,tE.value.trim(),tJ.value.trim());};
+    const row=el("div","btn-row");
+    const back=el("button","btn ghost","TROCAR DE CAMINHO"); back.onclick=()=>{S.etapa="paths";render();};
+    row.appendChild(back); row.appendChild(env); v.appendChild(row);
+  }
+
+  if(S.etapa==="sent"){
+    const d2=ja||{};
+    const c=el("div","card amber");
+    c.innerHTML='<div class="block-t">Decisão registrada</div><h4 style="font-size:18px">'+esc(d2.caminhoRotulo||"")+" · "+esc(d2.caminhoTitulo||"")+"</h4>"+
+      '<div class="hint mt12">Justificativa: '+esc(d2.justificativa||"")+"</div>";
+    v.appendChild(c);
+    const enviados=S.todas.filter(x=>x.rodada===n).length;
+    const w=el("div","card quiet mt16");
+    w.innerHTML='<div class="wait"><span class="pulse"></span> Aguardando os demais grupos e a liberação da revelação histórica.</div>'+
+      (S.modoLocal?"":'<div class="hint mt12">'+enviados+" de "+(S.grupos.length||1)+" grupos já responderam este dilema.</div>");
+    v.appendChild(w);
+    if(!S.modoLocal && S.todas.filter(x=>x.rodada===n).length>1){
+      const o=el("div","card quiet mt12");
+      o.innerHTML='<div class="block-t">O que os outros grupos escolheram</div>'+
+        S.todas.filter(x=>x.rodada===n).map(x=>'<div class="rowitem"><div class="badge">'+esc(x.empresa)+
+        '</div><div><div class="nm">'+esc(x.grupoNome)+'</div><div class="sub">'+esc(x.caminhoRotulo)+"</div></div></div>").join("");
+      v.appendChild(o);
+    }
+    v.appendChild(el("div","card quiet mt12",'<div class="block-t">A estratégia de vocês</div><div class="pre">'+esc(d2.estrategia||"")+"</div>"));
+    if(S.modoLocal){ const b=el("button","btn ghost mt16","VER A REVELAÇÃO (modo local)"); b.onclick=()=>definirFase(S.fase+1); v.appendChild(b); }
+  }
+}
+
+/* ---------------------------- revelação ---------------------------- */
+function telaRevelacao(v,n){
+  const d=DILEMAS[n-1], ja=minhaResposta(n), final=(n===3), meu=S.grupo.empresa;
+  v.appendChild(el("div",null,`<div style="padding:24px 0 14px">
+    <div class="kicker">Revelação ${n} de 3</div>
+    <h2 class="sec-title">Cinco organizações, o mesmo dilema</h2>
+    <p class="lead">${esc(d.pergunta)}</p>
+    <p class="lead mt8" style="color:var(--muted2)">${final?"E agora vocês descobrem qual delas estiveram comandando.":"Uma destas cinco é a organização de vocês — mas ainda não dá para saber qual."}</p></div>`));
+
+  if(ja){
+    const hist=el("div","card amber mb24");
+    hist.innerHTML='<div class="block-t">A decisão do grupo neste dilema</div><h4 style="font-size:18px">'+
+      esc(ja.caminhoRotulo)+" · "+esc(ja.caminhoTitulo)+"</h4>";
+    v.appendChild(hist);
+  }
+
+  ORDEM_CASES[n-1].forEach(cod=>{
+    const e=EMPRESAS[cod], mo=momento(cod,n), r=mo.rev, img=imagem(cod,n), lg=logo(cod);
+    const ehMeu=final&&cod===meu;
+    const c=el("div","case"+(ehMeu?" mine":""));
+    const media=el("div","case-media");
+    media.innerHTML=(img?'<img src="'+esc(img.url)+'" alt="'+esc(e.real.nome)+'">':ART[cod])+
+      '<div class="case-shade"></div><div class="case-over">'+
+      '<div class="case-logo">'+(lg?'<img src="'+esc(lg.url)+'" alt="">':esc(e.real.sigla))+'</div>'+
+      '<div><div class="case-year">'+esc(r.titulo?mo.ano:"")+'</div><div class="case-name">'+esc(e.real.nome)+"</div></div></div>";
+    c.appendChild(media);
+    const body=el("div","case-body");
+    body.innerHTML=(ehMeu?'<div class="mine-tag">Esta era a organização '+esc(cod)+' — a de vocês</div>':"")+
+      '<div class="case-path">Caminho adotado · '+esc(rotuloDoCaminho(n,mo.caminho))+" · "+esc(d.caminhos[mo.caminho].t)+"</div>"+
+      '<div class="case-t">'+esc(r.titulo)+"</div>"+
+      '<div class="case-grid">'+
+        '<div class="case-box"><div class="t">A situação</div><p>'+esc(r.situacao)+"</p></div>"+
+        '<div class="case-box"><div class="t">Por que decidiu assim</div><p>'+esc(r.porque)+"</p></div>"+
+        '<div class="case-box"><div class="t">O que fez</div><p>'+esc(r.decisao)+"</p></div>"+
+        '<div class="case-box"><div class="t">Resultado</div><p>'+esc(r.resultado)+"</p></div>"+
+      "</div>"+
+      '<div class="case-box key mt12"><div class="t">Aprendizado</div><p>'+esc(r.apr)+"</p></div>"+
+      '<div class="srcs mt12">'+r.fontes.map(f=>'<a href="'+esc(f[1])+'" target="_blank" rel="noopener">'+esc(f[0])+"</a>").join("")+"</div>";
+    c.appendChild(body); v.appendChild(c);
+  });
+
+  v.appendChild(el("div","card quiet mt16",
+    '<div class="block-t">A conversa que importa</div><ul class="bul cool">'+
+    ["Por que organizações diferentes, diante do mesmo dilema, escolheram caminhos opostos?",
+     "O que no contexto de cada uma justificou a escolha que ela fez?",
+     "O caminho de vocês funcionaria na realidade de outra organização desta tela?"]
+      .map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>"));
+  v.appendChild(el("div","card quiet mt16",'<div class="wait"><span class="pulse"></span> '+
+    (n<3?"Aguardando a liberação do próximo dilema.":"Aguardando a liberação da linha do tempo final.")+"</div>"));
+  if(S.modoLocal){ const b=el("button","btn ghost mt16","CONTINUAR (modo local)"); b.onclick=()=>definirFase(S.fase+1); v.appendChild(b); }
+}
+
+/* ---------------------------- linha do tempo ---------------------------- */
+function telaFinal(v){
+  const e=empresa();
+  v.appendChild(el("div",null,`<div style="padding:26px 0 6px">
+    <div class="kicker">Registro da experiência</div>
+    <h2 class="sec-title">Nossa jornada de liderança</h2>
+    <p class="lead">As decisões que tomamos e os caminhos que escolhemos.</p>
+    <div class="hint mt8">Grupo ${esc(S.grupo.nome)} · Organização ${esc(e.codigo)} · ${esc(e.real.nome)}</div></div>`));
+  const tl=el("div","tl mt16");
+  for(let n=1;n<=3;n++){
+    const d=DILEMAS[n-1], mo=momento(e.codigo,n), ja=minhaResposta(n);
+    const it=el("div","tl-item card");
+    it.innerHTML='<div class="kicker" style="margin-bottom:6px">Dilema 0'+n+'</div><h4 style="font-size:17px">'+esc(d.nome)+"</h4>"+
+      '<div class="hint mt8">'+esc(d.pergunta)+"</div>"+
+      '<div class="vs"><div class="b mine"><div class="t">Caminho do grupo</div><div class="n">'+
+      (ja?esc(ja.caminhoRotulo)+" · "+esc(ja.caminhoTitulo):"Sem registro")+"</div>"+
+      (ja?'<div class="d">'+esc(resumir(ja.estrategia,240))+"</div>":"")+"</div>"+
+      '<div class="b real"><div class="t">'+esc(e.real.nome)+" · "+esc(mo.ano)+'</div><div class="n">'+
+      esc(d.caminhos[mo.caminho].t)+'</div><div class="d">'+esc(resumir(mo.rev.titulo,240))+"</div></div></div>";
+    tl.appendChild(it);
+  }
+  v.appendChild(tl);
+  v.appendChild(el("div","card amber mt16",'<div class="final-quote">'+esc(FRASE_FINAL)+"</div>"));
+  const row=el("div","btn-row");
+  const b1=el("button","btn","GERAR MINHA LINHA DO TEMPO"); b1.onclick=()=>gerarImagem(b1);
+  row.appendChild(b1); v.appendChild(row);
+  v.appendChild(el("div","hint mt8","A imagem é otimizada para tela de celular. Um print desta tela também guarda o registro."));
+  const p=el("div","mt16"); p.id="previewTL"; v.appendChild(p);
+}
+function resumir(t,max){ t=String(t||""); return t.length>max?t.slice(0,max-1).replace(/\s+\S*$/,"")+"…":t; }
+
+function gerarImagem(btn){
+  const e=empresa(), W=1080, H=1920;
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const x=cv.getContext("2d"); if(!x){ toast("Não foi possível gerar a imagem."); return; }
+  const g=x.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,"#0C1838"); g.addColorStop(.5,"#060C1C"); g.addColorStop(1,"#0B1128");
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.save(); x.globalAlpha=.5; x.strokeStyle="#1E2E59"; x.lineWidth=1;
+  for(let i=1;i<9;i++){x.beginPath();x.moveTo(i*W/9,0);x.lineTo(i*W/9,H);x.stroke();} x.restore();
+  x.fillStyle="rgba(255,200,49,.07)"; x.beginPath(); x.arc(W-60,120,230,0,7); x.fill();
+  const F=(w,s)=>w+" "+s+'px Raleway, Arial, Helvetica, sans-serif';
+  const M=s=>'500 '+s+'px "IBM Plex Mono", monospace';
+  const sp=(v)=>{ try{x.letterSpacing=v;}catch(e){} };
+  function wrap(t,X,Y,maxW,lh,lim){
+    const ws=String(t).split(/\s+/); let line="",yy=Y,nl=0;
+    for(let i=0;i<ws.length;i++){
+      const test=line?line+" "+ws[i]:ws[i];
+      if(x.measureText(test).width>maxW&&line){
+        x.fillText(line,X,yy); yy+=lh; nl++; line=ws[i];
+        if(lim&&nl>=lim){ x.fillText(line.slice(0,36)+"…",X,yy); return yy+lh; }
+      } else line=test;
+    }
+    if(line){ x.fillText(line,X,yy); yy+=lh; }
+    return yy;
+  }
+  let y=128;
+  x.fillStyle="#FFC831"; x.font=M(24); sp("7px");
+  x.fillText("O PESO DA DECISÃO",76,y); sp("0px"); y+=80;
+  x.fillStyle="#FFFFFF"; x.font=F(900,72); x.fillText("NOSSA JORNADA",76,y); y+=76;
+  x.fillText("DE LIDERANÇA",76,y); y+=54;
+  x.fillStyle="#8392B8"; x.font=F(400,28);
+  y=wrap("As decisões que tomamos e os caminhos que escolhemos.",76,y,920,38)+22;
+  x.fillStyle="#C8D4EE"; x.font=M(23);
+  x.fillText("GRUPO "+S.grupo.nome.toUpperCase(),76,y); y+=34;
+  x.fillStyle="#FFC831"; x.font=M(23);
+  x.fillText("ORGANIZAÇÃO "+e.codigo+"  ·  "+e.real.nome.toUpperCase(),76,y); y+=52;
+
+  for(let n=1;n<=3;n++){
+    const d=DILEMAS[n-1], mo=momento(e.codigo,n), ja=minhaResposta(n);
+    const topo=y-16;
+    x.fillStyle="rgba(255,255,255,.028)";
+    rr(x,64,topo,W-128,430,20,true);
+    x.strokeStyle="#1B2A52"; x.lineWidth=1.5; rr(x,64,topo,W-128,430,20,false);
+    x.fillStyle="#FFC831"; x.beginPath(); x.arc(104,y+22,13,0,7); x.fill();
+    const X=142, maxW=854;
+    x.fillStyle="#FFC831"; x.font=M(21); sp("3px");
+    x.fillText("DILEMA 0"+n,X,y+28); sp("0px"); y+=62;
+    x.fillStyle="#FFFFFF"; x.font=F(800,36); y=wrap(d.nome,X,y,maxW,44)+16;
+    x.fillStyle="#8392B8"; x.font=M(19); sp("2px");
+    x.fillText("NOSSO CAMINHO",X,y); sp("0px"); y+=34;
+    x.fillStyle="#FFC831"; x.font=F(700,29);
+    y=wrap(ja?ja.caminhoRotulo+" · "+ja.caminhoTitulo:"Sem registro",X,y,maxW,37)+6;
+    if(ja){ x.fillStyle="#9FB0D6"; x.font=F(400,23); y=wrap(ja.estrategia,X,y,maxW,31,3)+12; }
+    x.fillStyle="#8392B8"; x.font=M(19); sp("2px");
+    x.fillText((e.real.nome+" · "+mo.ano).toUpperCase(),X,y); sp("0px"); y+=34;
+    x.fillStyle="#6BB6E8"; x.font=F(700,27);
+    y=wrap(d.caminhos[mo.caminho].t,X,y,maxW,34)+4;
+    x.fillStyle="#7F8FB5"; x.font=F(400,22); y=wrap(mo.rev.titulo,X,y,maxW,30,2);
+    y=topo+430+26;
+  }
+  const qy=Math.max(y+8,H-310);
+  x.fillStyle="rgba(255,200,49,.1)"; rr(x,64,qy-54,W-128,236,24,true);
+  x.strokeStyle="#8A6A1A"; x.lineWidth=2; rr(x,64,qy-54,W-128,236,24,false);
+  x.fillStyle="#FFC831"; x.font=F(800,34);
+  wrap("“"+FRASE_FINAL+"”",104,qy+4,W-208,46);
+  x.fillStyle="#5E6E96"; x.font=M(20); sp("4px");
+  x.fillText("BRASIL JÚNIOR  ·  O PESO DA DECISÃO",76,H-56); sp("0px");
+
+  const pv=document.getElementById("previewTL");
+  if(pv){ pv.innerHTML=""; const img=el("img"); img.alt="Linha do tempo do grupo";
+    img.style.cssText="width:100%;border-radius:14px;border:1px solid var(--line);display:block";
+    img.src=cv.toDataURL("image/png"); pv.appendChild(img);
+    pv.appendChild(el("div","hint mt8","Toque e segure na imagem para salvar, ou use o botão de download.")); }
+  const nome="linha-do-tempo-"+S.grupo.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".png";
+  cv.toBlob(async b=>{
+    if(!b){ toast("Não foi possível gerar a imagem."); return; }
+    if(downloadsCap&&downloadsCap.save){
+      try{ await downloadsCap.save({filename:nome,data:b}); toast("Linha do tempo salva."); }
+      catch(err){ if(err&&err.code!=="declined") toast("Use a imagem abaixo: toque e segure para salvar."); }
+    } else toast("Use a imagem abaixo: toque e segure para salvar.");
+    if(btn) btn.textContent="GERAR NOVAMENTE";
+  },"image/png");
+}
+function rr(c,X,Y,W2,H2,R,fill){ c.beginPath(); c.moveTo(X+R,Y);
+  c.arcTo(X+W2,Y,X+W2,Y+H2,R); c.arcTo(X+W2,Y+H2,X,Y+H2,R); c.arcTo(X,Y+H2,X,Y,R); c.arcTo(X,Y,X+W2,Y,R);
+  c.closePath(); if(fill)c.fill(); else c.stroke(); }
+
+/* ============================================================ ADMIN ======== */
+let adminLiberado=false;
+function telaAdmin(v){
+  if(!adminLiberado){
+    const c=el("div","card mt32");
+    c.innerHTML='<div class="kicker">Área restrita</div><h3 class="mb16" style="font-size:19px">Painel do facilitador</h3>'+
+      '<label for="pw">Senha</label><input type="text" id="pw" autocomplete="off" placeholder="Informe a senha do facilitador">';
+    const b=el("button","btn mt16","ENTRAR");
+    b.onclick=()=>{ if(c.querySelector("#pw").value.trim()===SENHA_FACILITADOR){adminLiberado=true;render();} else toast("Senha incorreta."); };
+    c.querySelector("#pw").addEventListener("keydown",ev=>{if(ev.key==="Enter")b.click();});
+    c.appendChild(b); v.appendChild(c); return;
+  }
+  v.appendChild(el("div",null,`<div style="padding:24px 0 4px">
+    <div class="kicker">Painel do facilitador</div>
+    <h2 class="sec-title">Controle da experiência</h2>
+    <p class="lead">Todos os grupos recebem o mesmo dilema ao mesmo tempo. A sequência é obrigatória.</p></div>`));
+
+  const st=el("div","card mt16");
+  st.innerHTML='<div class="block-t">Etapa atual</div><h3 style="font-size:22px">'+esc(ROTULOS[S.fase])+"</h3>"+
+    '<div class="hint mt8">Etapa '+(S.fase+1)+" de 9 · "+(S.modoLocal?"modo local (controla apenas este dispositivo)":"sincronizado com todos os grupos")+"</div>";
+  const nav=el("div","btn-row");
+  const prev=el("button","btn ghost","← ETAPA ANTERIOR"); prev.disabled=S.fase===0; prev.onclick=()=>definirFase(S.fase-1);
+  const next=el("button","btn",S.fase===0?"INICIAR EXPERIÊNCIA":S.fase===8?"ETAPA FINAL ATINGIDA":"LIBERAR: "+ROTULOS[S.fase+1].toUpperCase());
+  next.disabled=S.fase===8; next.onclick=()=>definirFase(S.fase+1);
+  nav.appendChild(prev); nav.appendChild(next); st.appendChild(nav);
+  const jump=el("div","btn-row");
+  ROTULOS.forEach((r,i)=>{ const b=el("button","btn ghost sm",(i+1)+". "+r);
+    if(i===S.fase)b.style.borderColor="var(--amber)"; b.onclick=()=>definirFase(i); jump.appendChild(b); });
+  st.appendChild(jump); v.appendChild(st);
+
+  const prog=el("div","card mt16");
+  prog.innerHTML='<div class="block-t">Grupos e progresso · '+S.grupos.length+"</div>";
+  if(!S.grupos.length) prog.appendChild(el("div","empty","Nenhum grupo registrado ainda."));
+  S.grupos.forEach(gr=>{
+    const r=el("div","rowitem");
+    const dots=[1,2,3].map(n=>{
+      const ok=S.todas.some(x=>x.grupoId===gr.id&&x.rodada===n)||(S.respostas[chaveResp(gr.id,n)]!=null);
+      return '<span class="dot'+(ok?" on":"")+'" title="Dilema '+n+'"></span>';
+    }).join("");
+    r.innerHTML='<div class="badge">'+esc(gr.empresa)+'</div><div><div class="nm">'+esc(gr.nome)+"</div>"+
+      '<div class="sub">'+esc(EMPRESAS[gr.empresa]?EMPRESAS[gr.empresa].real.nome:"")+(gr.responsavel?" · "+esc(gr.responsavel):"")+
+      '</div></div><div class="dots">'+dots+"</div>";
+    prog.appendChild(r);
+  });
+  v.appendChild(prog);
+
+  const rodAtual=rodadaDaFase(S.fase)||revelacaoDaFase(S.fase);
+  if(rodAtual){
+    const resumo=el("div","card quiet mt16");
+    const resp=S.todas.filter(x=>x.rodada===rodAtual);
+    const cont={};
+    resp.forEach(r=>{cont[r.caminhoRotulo]=(cont[r.caminhoRotulo]||0)+1;});
+    resumo.innerHTML='<div class="block-t">Dilema 0'+rodAtual+" · "+resp.length+" de "+(S.grupos.length||0)+" grupos responderam</div>"+
+      caminhosOrdenados(rodAtual).map(cm=>'<div class="rowitem"><div class="badge">'+(cont[cm.rotulo]||0)+
+      '</div><div><div class="nm">'+esc(cm.rotulo)+'</div><div class="sub">'+esc(cm.t)+"</div></div></div>").join("");
+    v.appendChild(resumo);
+  }
+
+  const tabela=el("div","card mt16");
+  tabela.innerHTML='<div class="block-t">Decisões e justificativas · '+S.todas.length+" registros</div>";
+  if(!S.todas.length) tabela.appendChild(el("div","empty","Nenhuma resposta registrada ainda."));
+  else{
+    const sc=el("div","scrollx");
+    const rows=S.todas.slice().sort((a,b)=>(a.rodada-b.rodada)||String(a.grupoNome).localeCompare(String(b.grupoNome)));
+    sc.innerHTML='<table><thead><tr><th>D</th><th>Grupo</th><th>Org.</th><th>Caminho</th><th>Justificativa</th><th>Estratégia</th></tr></thead><tbody>'+
+      rows.map(r=>"<tr><td>0"+r.rodada+"</td><td><b>"+esc(r.grupoNome)+"</b></td><td>"+esc(r.empresa)+"</td><td>"+
+        esc(r.caminhoRotulo)+'<div class="mini">'+esc(r.caminhoTitulo)+'</div></td><td><div class="mini">'+esc(r.justificativa)+
+        '</div></td><td><div class="mini">'+esc(r.estrategia)+"</div></td></tr>").join("")+"</tbody></table>";
+    tabela.appendChild(sc);
+    const exp=el("button","btn ghost sm mt16","EXPORTAR RESPOSTAS (CSV)");
+    exp.onclick=()=>exportarCSV(rows); tabela.appendChild(exp);
+  }
+  v.appendChild(tabela);
+
+  /* ---- imagens reais ---- */
+  const im=el("div","card mt16");
+  im.innerHTML='<div class="block-t">Fotografias e logotipos das organizações</div>'+
+    '<div class="hint mb16">Envie uma fotografia por organização e por dilema para dar protagonismo visual à revelação. '+
+    'Sem envio, a tela usa uma composição gráfica própria. Formatos: PNG, JPG ou WebP, até 19 MB.</div>';
+  if(!assetsCap) im.appendChild(el("div","empty","Envio de imagens indisponível nesta visualização. Abra o artefato como proprietário ou editor."));
+  else{
+    CODIGOS.forEach(cod=>{
+      const bloco=el("div","card quiet mb12");
+      bloco.innerHTML='<div class="rowitem" style="padding-top:0"><div class="badge">'+cod+
+        '</div><div><div class="nm">'+esc(EMPRESAS[cod].real.nome)+"</div></div></div>";
+      [["logo_"+cod,"Logotipo"],[cod+"_1","Foto · Dilema 1"],[cod+"_2","Foto · Dilema 2"],[cod+"_3","Foto · Dilema 3"]]
+        .forEach(([chave,rot])=>{
+          const linha=el("div","upl");
+          const atual=S.midia[chave];
+          linha.innerHTML=(atual?'<img class="thumb" src="'+esc(atual.url)+'" alt="">':'<span class="thumb"></span>')+
+            '<span class="lbl">'+esc(rot)+"</span>";
+          const inp=el("input"); inp.type="file"; inp.accept="image/png,image/jpeg,image/webp";
+          const stt=el("span","st"+(atual?" ok":""),atual?"enviada":"sem imagem");
+          inp.onchange=()=>{ if(inp.files&&inp.files[0]) enviarImagem(chave,inp.files[0],stt); };
+          linha.appendChild(inp); linha.appendChild(stt); bloco.appendChild(linha);
+        });
+      im.appendChild(bloco);
+    });
+  }
+  v.appendChild(im);
+
+  const gab=el("div","card quiet mt16");
+  gab.innerHTML='<div class="block-t">Gabarito — qual caminho cada organização adotou</div>'+
+    '<div class="scrollx"><table><thead><tr><th>Organização</th><th>Dilema 1</th><th>Dilema 2</th><th>Dilema 3</th></tr></thead><tbody>'+
+    CODIGOS.map(k=>"<tr><td><b>"+k+"</b> "+esc(EMPRESAS[k].real.nome)+"</td>"+
+      [1,2,3].map(n=>{const mo=momento(k,n);return "<td>"+rotuloDoCaminho(n,mo.caminho)+'<div class="mini">'+esc(DILEMAS[n-1].caminhos[mo.caminho].t)+"</div></td>";}).join("")+
+      "</tr>").join("")+"</tbody></table></div>";
+  v.appendChild(gab);
+
+  const dz=el("div","card mt16");
+  dz.innerHTML='<div class="block-t">Zona de risco</div><div class="hint mb12">Apaga todos os grupos e respostas e devolve a experiência ao início.</div>';
+  const rb=el("button","btn ghost sm","REINICIAR A DINÂMICA");
+  rb.style.borderColor="#6A3A33"; rb.style.color="#E08878"; rb.onclick=reiniciar;
+  dz.appendChild(rb); v.appendChild(dz);
+}
+function exportarCSV(rows){
+  const q=s=>'"'+String(s==null?"":s).replace(/"/g,'""')+'"';
+  const csv=["Dilema,NomeDoDilema,Grupo,Organizacao,OrganizacaoReal,Caminho,TituloCaminho,Justificativa,Estrategia,EnviadoEm"]
+    .concat(rows.map(r=>[r.rodada,r.dilema,r.grupoNome,r.empresa,(EMPRESAS[r.empresa]||{real:{}}).real.nome,
+      r.caminhoRotulo,r.caminhoTitulo,r.justificativa,r.estrategia,r.enviadoEm].map(q).join(","))).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv"});
+  if(downloadsCap&&downloadsCap.save){
+    downloadsCap.save({filename:"peso-da-decisao-respostas.csv",data:blob})
+      .then(()=>toast("CSV salvo.")).catch(e=>{ if(e&&e.code!=="declined") toast("Não foi possível salvar o CSV."); });
+  } else toast("Download indisponível nesta visualização.");
+}
+
+/* ============================================================ BOOT ========= */
+lerLocal(); render(); iniciarBanco();
+if(location.hash==="#facilitador"){ S.admin=true; render(); }
+window.addEventListener("hashchange",()=>{ if(location.hash==="#facilitador"){S.admin=true;render();} });
+</script>
+</body>
+</html>
